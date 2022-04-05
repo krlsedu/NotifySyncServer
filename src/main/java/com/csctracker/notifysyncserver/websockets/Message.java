@@ -4,7 +4,6 @@ public class Message {
 
     private String from;
     private String text;
-
     private String app;
 
     public String getText() {

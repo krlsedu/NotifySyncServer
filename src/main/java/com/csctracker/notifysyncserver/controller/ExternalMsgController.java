@@ -19,7 +19,7 @@ public class ExternalMsgController {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
-    @PostMapping("/teste")
+    @PostMapping("/info")
     public void envia(@RequestBody final Message message) {
 
         final String time = new SimpleDateFormat("HH:mm").format(new Date());
