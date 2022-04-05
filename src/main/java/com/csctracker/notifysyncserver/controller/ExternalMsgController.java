@@ -4,6 +4,7 @@ import com.csctracker.notifysyncserver.websockets.Message;
 import com.csctracker.notifysyncserver.websockets.OutputMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
@@ -19,7 +20,7 @@ public class ExternalMsgController {
     }
 
     @PostMapping("/teste")
-    public void envia(final Message message) {
+    public void envia(@RequestBody final Message message) {
 
         final String time = new SimpleDateFormat("HH:mm").format(new Date());
         simpMessagingTemplate.convertAndSend("/topic/messages",
