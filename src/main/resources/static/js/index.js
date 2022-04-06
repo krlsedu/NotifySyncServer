@@ -9,7 +9,29 @@ function setConnected(connected) {
 }
 
 function connect() {
-    socket = new WebSocket("wss://www.csctracker.com/stock-ticks/websocket");
+    let socket = new SockJS('wss://www.csctracker.com/stock-ticks/websocket');
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        setConnected(true);
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/messages', function (messageOutput) {
+            showMessageOutput(JSON.parse(messageOutput.body));
+        });
+    });
+}
+
+function reconnect() {
+    disconnect();
+    connect()
+}
+
+function disconnect() {
+    if (stompClient != null) {
+        stompClient.disconnect();
+    }
+    setConnected(false);
+    console.log("Disconnected");
 }
 
 function sendMessage() {
@@ -72,14 +94,21 @@ let socket = new WebSocket("wss://www.csctracker.com/stock-ticks/websocket");
 socket.onopen = function (e) {
     setConnected(true);
     console.log(e);
-    notifyMe("[open] Connection established",'Notify-client');
-    //  socket.send("My name is John");
+    notifyMe("[open] Connection established", 'Notify-client');
+    let from = ""
+    let text = ""
+    let app = ""
+    socket.send(JSON.stringify({'from': from, 'text': text, 'app': app}));
 };
 
 socket.onmessage = function (event) {
     console.log(event)
     showMessageOutput(event.data);
 };
+
+socket.addEventListener("message", function (e) {
+    console.log(e);
+})
 
 socket.onclose = function (event) {
 
