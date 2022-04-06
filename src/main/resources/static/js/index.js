@@ -70,31 +70,7 @@ function notifyMe(messageOutput) {
             body: messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")",
         });
         notification.onclick = function () {
-            window.open('http://localhost:8890');
+            window.open('https://notify.csctracker.com/');
         };
     }
-    post(messageOutput);
-}
-
-function post(app) {
-    return new Promise(((resolve, reject) => {
-        try {
-            console.log(app)
-            fetch("http://127.0.0.1:8777/notificar",{
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(app)
-            }).then(value =>{
-                resolve(value);
-            }).catch(reason => {
-                reject(reason)
-            })
-        } catch (e) {
-            console.log(e)
-            reject("Opssssssssssss")
-        }
-    }))
 }
