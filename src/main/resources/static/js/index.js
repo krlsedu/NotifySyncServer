@@ -77,6 +77,7 @@ socket.onopen = function (e) {
 };
 
 socket.onmessage = function (event) {
+    console.log(event)
     showMessageOutput(event.data);
 };
 
