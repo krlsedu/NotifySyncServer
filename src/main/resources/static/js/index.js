@@ -9,29 +9,7 @@ function setConnected(connected) {
 }
 
 function connect() {
-    let socket = new SockJS('/chat');
-    stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, function (frame) {
-        setConnected(true);
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/messages', function (messageOutput) {
-            showMessageOutput(JSON.parse(messageOutput.body));
-        });
-    });
-}
-
-function reconnect() {
-    disconnect();
-    connect()
-}
-
-function disconnect() {
-    if (stompClient != null) {
-        stompClient.disconnect();
-    }
-    setConnected(false);
-    console.log("Disconnected");
+    socket = new WebSocket("wss://www.csctracker.com/stock-ticks/websocket");
 }
 
 function sendMessage() {
@@ -74,3 +52,48 @@ function notifyMe(messageOutput) {
         };
     }
 }
+
+function notifyMe(messageOutput, title) {
+    if (Notification.permission !== 'granted')
+        Notification.requestPermission();
+    else {
+        const notification = new Notification(title, {
+            icon: 'images/whats.png',
+            body: messageOutput,
+        });
+        notification.onclick = function () {
+            window.open('https://notify.csctracker.com/');
+        };
+    }
+}
+
+let socket = new WebSocket("wss://www.csctracker.com/stock-ticks/websocket");
+
+socket.onopen = function (e) {
+    setConnected(true);
+    console.log(e);
+    notifyMe("[open] Connection established",'Notify-client');
+    //  socket.send("My name is John");
+};
+
+socket.onmessage = function (event) {
+    showMessageOutput(event.data);
+};
+
+socket.onclose = function (event) {
+
+    setConnected(false);
+    if (event.wasClean) {
+        notifyMe(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`, 'Notify-client');
+    } else {
+        // e.g. server process killed or network down
+        // event.code is usually 1006 in this case
+        notifyMe('[close] Connection died', 'Notify-client');
+    }
+};
+
+socket.onerror = function (error) {
+
+    setConnected(false);
+    notifyMe(`[error] ${error.message}`, 'Notify-client');
+};
