@@ -9,7 +9,7 @@ function setConnected(connected) {
 }
 
 function connect() {
-    let socket = new SockJS('wss://www.csctracker.com/stock-ticks/websocket');
+    let socket = new WebSocket('wss://www.csctracker.com/stock-ticks/websocket');
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
