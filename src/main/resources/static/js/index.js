@@ -8,8 +8,10 @@ function setConnected(connected) {
     document.getElementById('response').innerHTML = '';
 }
 
+let socket = null;
+
 function connect() {
-    let socket = new WebSocket('wss://www.csctracker.com/stock-ticks/websocket');
+    socket = new WebSocket('wss://www.csctracker.com/stock-ticks/websocket');
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
@@ -19,6 +21,23 @@ function connect() {
             showMessageOutput(JSON.parse(messageOutput.body));
         });
     });
+    socket.addEventListener('ping', function (evt) {
+        ping(evt)
+    })
+    socket.addEventListener('close', connect);
+    heartbeat();
+}
+
+function ping(evt) {
+    console.log(evt);
+}
+
+function heartbeat() {
+    if (!socket) return;
+    if (socket.readyState !== 1) return;
+    socket.send("heartbeat");
+    stompClient.send("heartbeat");
+    setTimeout(heartbeat, 500);
 }
 
 function reconnect() {
@@ -46,7 +65,7 @@ function showMessageOutput(messageOutput) {
     let p = document.createElement('p');
     p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
     response.appendChild(p);
-    notifyMe(messageOutput)
+    notify(messageOutput)
 }
 
 
@@ -61,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-function notifyMe(messageOutput) {
+function notify(messageOutput) {
     if (Notification.permission !== 'granted')
         Notification.requestPermission();
     else {

@@ -312,11 +312,12 @@
                     messag.from = 'Notify Sync';
                     messag.text = msg;
                     messag.app = 'Chrome';
-                    notifyMe(messag);
+                    notify(messag);
                     if (typeof _this.debug === "function") {
                         _this.debug(msg);
                     }
                     _this._cleanUp();
+                    connect();
                     return typeof errorCallback === "function" ? errorCallback(msg) : void 0;
                 };
             })(this);
