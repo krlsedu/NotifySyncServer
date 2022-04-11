@@ -100,7 +100,7 @@ function notify(messageOutput) {
 }
 
 function isEmpty(str) {
-    return (!str || str.length === 0);
+    return (!str || str.trim() === "");
 }
 
 function notifyMe(messageOutput, title) {
