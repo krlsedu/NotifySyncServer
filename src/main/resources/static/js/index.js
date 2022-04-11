@@ -86,7 +86,8 @@ function notify(messageOutput) {
         Notification.requestPermission();
     else {
         let text = document.getElementById('text').value;
-        if (messageOutput.from.includes(text) || text === '*') {
+
+        if ((!isEmpty(text) && messageOutput.from.includes(text)) || text === '*') {
             const notification = new Notification('Notification incoming from ' + messageOutput.app, {
                 icon: 'images/whats.png',
                 body: messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")",
@@ -96,6 +97,10 @@ function notify(messageOutput) {
             };
         }
     }
+}
+
+function isEmpty(str) {
+    return (!str || str.length === 0);
 }
 
 function notifyMe(messageOutput, title) {
