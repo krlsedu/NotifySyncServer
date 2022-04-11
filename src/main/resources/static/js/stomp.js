@@ -312,7 +312,6 @@
                     messag.from = 'Notify Sync';
                     messag.text = msg;
                     messag.app = 'Chrome';
-                    notify(messag);
                     if (typeof _this.debug === "function") {
                         _this.debug(msg);
                     }

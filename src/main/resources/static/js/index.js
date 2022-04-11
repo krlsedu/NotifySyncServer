@@ -11,7 +11,8 @@ function setConnected(connected) {
 let socket = null;
 
 function connect() {
-    socket = new WebSocket('wss://www.csctracker.com/stock-ticks/websocket');
+    socket = new WebSocket('wss://notify.csctracker.com/stock-ticks/websocket');
+    // socket = new WebSocket('ws://127.0.0.1:8890/stock-ticks/websocket');
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
@@ -84,13 +85,16 @@ function notify(messageOutput) {
     if (Notification.permission !== 'granted')
         Notification.requestPermission();
     else {
-        const notification = new Notification('Notification incoming from ' + messageOutput.app, {
-            icon: 'images/whats.png',
-            body: messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")",
-        });
-        notification.onclick = function () {
-            window.open('https://notify.csctracker.com/');
-        };
+        let text = document.getElementById('text').value;
+        if (messageOutput.from.includes(text) || text === '*') {
+            const notification = new Notification('Notification incoming from ' + messageOutput.app, {
+                icon: 'images/whats.png',
+                body: messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")",
+            });
+            notification.onclick = function () {
+                window.open('https://notify.csctracker.com/');
+            };
+        }
     }
 }
 

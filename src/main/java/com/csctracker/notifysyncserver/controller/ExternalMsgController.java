@@ -1,31 +1,30 @@
 package com.csctracker.notifysyncserver.controller;
 
-import com.csctracker.notifysyncserver.websockets.Message;
-import com.csctracker.notifysyncserver.websockets.OutputMessage;
+import com.csctracker.notifysyncserver.dto.Message;
+import com.csctracker.notifysyncserver.dto.OutputMessage;
+import com.csctracker.notifysyncserver.service.NotificationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @RestController
 public class ExternalMsgController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public ExternalMsgController(SimpMessagingTemplate simpMessagingTemplate) {
+    private final NotificationService notificationService;
+
+    public ExternalMsgController(SimpMessagingTemplate simpMessagingTemplate, NotificationService notificationService) {
         this.simpMessagingTemplate = simpMessagingTemplate;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/info")
-    public void envia(@RequestBody final Message message) {
-
-        final String time = new SimpleDateFormat("HH:mm").format(new Date());
-        simpMessagingTemplate.convertAndSend("/topic/messages",
-                new OutputMessage(message.getFrom(), message.getText(), time, message.getApp()));
-
+    public void envia(@RequestBody Message message) throws JsonProcessingException {
+        OutputMessage payload = notificationService.convertMessage(message);
+        simpMessagingTemplate.convertAndSend("/topic/messages", payload);
     }
 }
 

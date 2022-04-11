@@ -1,4 +1,4 @@
-package com.csctracker.notifysyncserver.websockets;
+package com.csctracker.notifysyncserver.dto;
 
 import lombok.*;
 
