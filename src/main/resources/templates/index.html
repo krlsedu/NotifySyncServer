@@ -1,23 +1,64 @@
+<!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/bootstrap.css">
+
     <title>Notifications</title>
 
     <script data-th-src="@{js/sockjs-0.3.4.js}"></script>
     <script data-th-src="@{js/stomp.js}"></script>
     <script data-th-src="@{js/index.js}"></script>
+    <script data-th-src="@{js/bootstrap.bundle.min.js}"></script>
+    <script data-th-src="@{js/http_code.jquery.com_jquery-3.1.0.js}"></script>
+    <script data-th-src="@{js/http_code.jquery.com_jquery-3.3.1.slim.js}"></script>
 </head>
 
-<div>
-    <div>
-        <button id="connect" onclick="connect();">Connect</button>
-        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
-    </div>
-    <br/>
-    <div id="conversationDiv">
-        <input type="text" id="text" placeholder="Notificar quando?"/>
-        <p id="response"></p>
+<body>
+
+<div class="container">
+    <div class="row justify-center">
+        <div class="col-12">
+            <header>
+                <h1>Notificações</h1>
+            </header>
+            <div class="input-group mb-2">
+                <input id="text" type="text" class="form-control" placeholder="Notificar quando?"
+                       aria-label="Add an item" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-info" id="connect" type="button" onclick="connect();">Connect
+                    </button>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-info" id="disconnect" type="button" disabled="disabled"
+                            onclick="disconnect();">Disconnect
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-12">
+            <ul class="list-group">
+            </ul>
+        </div>
     </div>
 </div>
 
 </body>
 </html>
+
+
+<script>
+    var button = document.getElementById("connect");
+    var input = document.getElementById("text");
+    var ul = document.querySelector("ul");
+
+    button.addEventListener("click", function () {
+        var li = document.createElement("li");
+        li.className = 'list-group-item';
+        li.textContent = input.value;
+        ul.appendChild(li);
+    })
+</script>

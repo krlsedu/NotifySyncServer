@@ -12,4 +12,9 @@ public class BaseController {
         model.addAttribute("title", "Docker + Spring Boot");
         return "index";
     }
+
+    @GetMapping("/notification")
+    public String notification(Model model){
+        return "index_old";
+    }
 }

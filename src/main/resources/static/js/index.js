@@ -1,10 +1,8 @@
 let stompClient = null;
 
 function setConnected(connected) {
-
     document.getElementById('connect').disabled = connected;
     document.getElementById('disconnect').disabled = !connected;
-    document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
 }
 
 let socket = null;
@@ -38,10 +36,11 @@ function sendMessage() {
 }
 
 function showMessageOutput(messageOutput) {
-    let response = document.getElementById('response');
-    let p = document.createElement('p');
-    p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
-    response.appendChild(p);
+    var ul = document.querySelector("ul");
+    var li = document.createElement("li");
+    li.className = 'list-group-item';
+    li.textContent = messageOutput.app + " - " + messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")";
+    ul.appendChild(li);
     notify(messageOutput)
 }
 
