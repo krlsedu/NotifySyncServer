@@ -14,7 +14,6 @@ function connect() {
     socket = new WebSocket('wss://notify.csctracker.com/stock-ticks/websocket');
     // socket = new WebSocket('ws://127.0.0.1:8890/stock-ticks/websocket');
     stompClient = Stomp.over(socket);
-
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
@@ -22,23 +21,10 @@ function connect() {
             showMessageOutput(JSON.parse(messageOutput.body));
         });
     });
-    socket.addEventListener('ping', function (evt) {
-        ping(evt)
-    })
-    socket.addEventListener('close', connect);
-    heartbeat();
 }
 
 function ping(evt) {
     console.log(evt);
-}
-
-function heartbeat() {
-    if (!socket) return;
-    if (socket.readyState !== 1) return;
-    socket.send("heartbeat");
-    stompClient.send("heartbeat");
-    setTimeout(heartbeat, 500);
 }
 
 function reconnect() {
