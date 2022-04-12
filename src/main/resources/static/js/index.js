@@ -22,15 +22,6 @@ function connect() {
     });
 }
 
-function ping(evt) {
-    console.log(evt);
-}
-
-function reconnect() {
-    disconnect();
-    connect()
-}
-
 function disconnect() {
     if (stompClient != null) {
         stompClient.disconnect();
@@ -74,7 +65,7 @@ function notify(messageOutput) {
 
         if ((!isEmpty(text) && messageOutput.from.includes(text)) || text === '*') {
             const notification = new Notification('Notification incoming from ' + messageOutput.app, {
-                icon: 'images/whats.png',
+                icon: 'images/csctracker-desktop-plugin.png',
                 body: messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")",
             });
             notification.onclick = function () {
@@ -93,7 +84,7 @@ function notifyMe(messageOutput, title) {
         Notification.requestPermission();
     else {
         const notification = new Notification(title, {
-            icon: 'images/whats.png',
+            icon: 'images/csctracker-desktop-plugin.png',
             body: messageOutput,
         });
         notification.onclick = function () {
