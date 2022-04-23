@@ -3,41 +3,36 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.6</version>
+        <groupId>com.csctracker</groupId>
+        <artifactId>starter</artifactId>
+        <version>1.0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.csctracker.notifysyncserver</groupId>
-    <artifactId>NotifySyncServer</artifactId>
+    <artifactId>CscTrackerNotifySync</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>NotifySyncServer</name>
-    <description>NotifySyncServer</description>
+    <name>CscTrackerNotifySync</name>
+    <description>CscTrackerNotifySync</description>
     <properties>
         <java.version>11</java.version>
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
+            <groupId>com.csctracker</groupId>
+            <artifactId>SecurityCore</artifactId>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
-        <finalName>notify-sync-server</finalName>
+        <finalName>csctracker-notify-sync</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

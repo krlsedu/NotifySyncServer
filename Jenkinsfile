@@ -24,7 +24,7 @@ pipeline {
     stage('Docker image') {
       agent any
       steps {
-        sh 'docker build -t krlsedu/notify-sync-server:latest .'
+        sh 'docker build -t krlsedu/csctracker-notify-sync:latest .'
       }
     }
     stage('Docker Push') {
@@ -32,7 +32,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
           sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-          sh 'docker push krlsedu/notify-sync-server'
+          sh 'docker push krlsedu/csctracker-notify-sync'
         }
       }
     }

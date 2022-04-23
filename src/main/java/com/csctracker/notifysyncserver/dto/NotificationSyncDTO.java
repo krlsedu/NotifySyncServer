@@ -3,7 +3,7 @@ package com.csctracker.notifysyncserver.dto;
 import lombok.Data;
 
 @Data
-public class NotificationSync {
+public class NotificationSyncDTO {
     private String appName;
     private String text;
     private String title;
