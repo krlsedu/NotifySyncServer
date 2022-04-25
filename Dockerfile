@@ -13,7 +13,7 @@
 FROM adoptopenjdk/openjdk11:alpine-jre
 WORKDIR /opt/app
 
-ARG JAR_FILE=target/notify-sync-server.jar
+ARG JAR_FILE=target/csctracker-notify-sync.jar
 
 COPY ${JAR_FILE} app.jar
 
