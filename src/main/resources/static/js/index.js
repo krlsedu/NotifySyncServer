@@ -23,7 +23,7 @@ function connect() {
     } else {
         connectToSocket(user);
     }
-    setVar('text', false);
+    localStorage.setItem('text', document.getElementById('text').value);
 }
 
 function setVar(variable, hide) {
@@ -34,7 +34,6 @@ function setVar(variable, hide) {
             let element = document.getElementById(variable);
             $(element).hide();
         }
-
     }
 }
 
@@ -132,7 +131,6 @@ function notify(messageOutput) {
     else {
         let text = document.getElementById('text').value;
         if ((!isEmpty(text) && messageOutput.from.includes(text)) || text === '*') {
-            localStorage.setItem('text', text);
             const notification = new Notification('Notification incoming from ' + messageOutput.app, {
                 icon: 'images/csctracker-desktop-plugin.png',
                 body: messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")",
