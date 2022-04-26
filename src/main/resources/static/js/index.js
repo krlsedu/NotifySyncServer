@@ -14,15 +14,16 @@ function connect() {
     let user = JSON.parse(localStorage.getItem('user'));
     console.log(user);
     if (user == null) {
+        setVar('token', false);
         getUser().then(function (response) {
             user = response;
+            setVar('token', true);
             connectToSocket(user);
         })
     } else {
         connectToSocket(user);
     }
     setVar('text', false);
-    setVar('token', true);
 }
 
 function setVar(variable, hide) {
