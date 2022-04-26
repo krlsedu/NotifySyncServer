@@ -2,7 +2,9 @@ package com.csctracker.notifysyncserver.controller;
 
 import com.csctracker.notifysyncserver.dto.MessageDTO;
 import com.csctracker.notifysyncserver.dto.OutputMessage;
+import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.service.NotificationService;
+import com.csctracker.securitycore.dto.Conversor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,10 @@ public class ExternalMsgController {
 
     private final NotificationService notificationService;
 
+    private final Conversor<Message, MessageDTO> conversor;
+
     public ExternalMsgController(SimpMessagingTemplate simpMessagingTemplate, NotificationService notificationService) {
+        this.conversor = new Conversor<>(Message.class, MessageDTO.class);
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.notificationService = notificationService;
     }
@@ -27,8 +32,7 @@ public class ExternalMsgController {
     @PostMapping("/message")
     public void envia(@RequestBody MessageDTO messageDTO, Principal principal) {
         var message = notificationService.grava(messageDTO, principal);
-        //fixme remove
-        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(), message);
+        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(), new OutputMessage(message.getId(), null, null, null, null));
     }
 
     @GetMapping("/messages")
