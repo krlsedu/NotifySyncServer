@@ -151,7 +151,7 @@ function get(URL, data) {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Authorization': 'Bearer ' + document.getElementById('token').value,
                     'Content-Type': 'application/json'
                 }
             }).then(value => {
