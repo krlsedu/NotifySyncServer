@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let tokenText = document.getElementById('token');
     let token = localStorage.getItem('token');
-    $(textText).val(token)
+    $(tokenText).val(token)
     if (token === null) {
         $(tokenText).show();
     } else {
