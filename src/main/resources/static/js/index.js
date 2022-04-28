@@ -9,6 +9,7 @@ let socket = null;
 let server = 'notify.csctracker.com';
 let secure = 's';
 let urlBase = 'http' + secure + '://' + server + '/';
+let configs;
 
 function connect() {
     let user = JSON.parse(localStorage.getItem('user'));
@@ -23,6 +24,12 @@ function connect() {
     } else {
         connectToSocket(user);
     }
+    getConfigs().then(function (response) {
+        configs = response;
+        localStorage.setItem('configs', configs);
+        let textText = document.getElementById('text');
+        $(textText).val(configs.favoriteContact);
+    })
     localStorage.setItem('text', document.getElementById('text').value);
 }
 
@@ -63,6 +70,19 @@ function getUser() {
     }))
 }
 
+function getConfigs() {
+    return new Promise(((resolve, reject) => {
+        get(urlBase + 'configs').then(function (response) {
+            console.log(response);
+            localStorage.setItem('configs', JSON.stringify(response));
+            resolve(response)
+        }).catch(reason => {
+            console.log(reason)
+            reject(reason)
+        });
+    }))
+}
+
 function disconnect() {
     if (stompClient != null) {
         stompClient.disconnect();
@@ -92,7 +112,15 @@ function getmessage(id) {
 function showMessageOutput(messageOutput) {
     var ul = document.querySelector("ul");
     var li = document.createElement("li");
-    li.className = 'list-group-item';
+    if (isFavoriteContact(messageOutput)) {
+        li.className = 'list-group-item bg-green';
+    } else {
+        if (isFavoriteApp(messageOutput)) {
+            li.className = 'list-group-item bg-blue';
+        } else {
+            li.className = 'list-group-item';
+        }
+    }
     li.textContent = messageOutput.app + " - " + messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")";
     ul.appendChild(li);
     notify(messageOutput)
@@ -129,8 +157,7 @@ function notify(messageOutput) {
     if (Notification.permission !== 'granted')
         Notification.requestPermission();
     else {
-        let text = document.getElementById('text').value;
-        if ((!isEmpty(text) && messageOutput.from.includes(text)) || text === '*') {
+        if (isNotify(messageOutput)) {
             const notification = new Notification('Notification incoming from ' + messageOutput.app, {
                 icon: 'images/csctracker-desktop-plugin.png',
                 body: messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")",
@@ -140,6 +167,20 @@ function notify(messageOutput) {
             };
         }
     }
+}
+
+function isFavoriteContact(messageOutput) {
+    let text = document.getElementById('text').value;
+    return ((!isEmpty(text) && messageOutput.from.includes(text)) || text === '*')
+}
+
+function isFavoriteApp(messageOutput) {
+    let text = configs.applicationNotify;
+    return ((!isEmpty(text) && messageOutput.app === text) || text === '*')
+}
+
+function isNotify(messageOutput) {
+    return isFavoriteContact(messageOutput) || isFavoriteApp(messageOutput);
 }
 
 function get(URL, data) {
