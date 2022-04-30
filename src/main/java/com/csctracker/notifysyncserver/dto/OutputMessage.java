@@ -11,9 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class OutputMessage {
 
-    private Long id;
+    private String uuid;
     private String from;
     private String text;
     private String time;
     private String app;
+
+    public String getId() {
+        return uuid;
+    }
 }

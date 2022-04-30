@@ -40,6 +40,8 @@ public class Message {
     private Date dateSynced;
     private Date dateSent;
 
+    private String uuid;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

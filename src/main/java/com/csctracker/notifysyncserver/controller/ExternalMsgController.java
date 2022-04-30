@@ -8,7 +8,6 @@ import com.csctracker.securitycore.dto.Conversor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -17,22 +16,18 @@ import java.util.List;
 @RestController
 public class ExternalMsgController {
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
-
     private final NotificationService notificationService;
 
     private final Conversor<Message, MessageDTO> conversor;
 
-    public ExternalMsgController(SimpMessagingTemplate simpMessagingTemplate, NotificationService notificationService) {
+    public ExternalMsgController(NotificationService notificationService) {
         this.conversor = new Conversor<>(Message.class, MessageDTO.class);
-        this.simpMessagingTemplate = simpMessagingTemplate;
         this.notificationService = notificationService;
     }
 
     @PostMapping("/message")
     public void envia(@RequestBody MessageDTO messageDTO, Principal principal) {
-        var message = notificationService.grava(messageDTO, principal);
-        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(), new OutputMessage(message.getId(), null, null, null, null));
+        notificationService.grava(messageDTO, principal);
     }
 
     @GetMapping("/messages")
@@ -41,7 +36,7 @@ public class ExternalMsgController {
     }
 
     @GetMapping("/message/{id}")
-    public ResponseEntity<OutputMessage> get(Principal principal, @PathVariable Long id) throws JsonProcessingException {
+    public ResponseEntity<OutputMessage> get(Principal principal, @PathVariable String id) throws JsonProcessingException {
         return new ResponseEntity<>(notificationService.get(principal, id), HttpStatus.OK);
     }
 }
