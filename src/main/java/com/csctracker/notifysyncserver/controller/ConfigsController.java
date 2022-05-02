@@ -27,7 +27,7 @@ public class ConfigsController {
         return new ResponseEntity<>(conversor.toD(configsService.getConfigByUser(principal)), HttpStatus.OK);
     }
 
-    @PostMapping("/configs")
+    @PostMapping(value = "/configs", consumes = "application/json")
     @ResponseStatus(HttpStatus.ACCEPTED)
     private void setConfigs(@RequestBody ConfigsDTO configsDTO, Principal principal) {
         configsService.save(conversor.toE(configsDTO), principal);

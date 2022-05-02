@@ -51,6 +51,8 @@ function connectToSocket(user) {
     socket = new WebSocket('ws' + secure + '://' + server + '/stock-ticks/websocket');
     // socket = new WebSocket('ws://127.0.0.1:8890/stock-ticks/websocket');
     stompClient = Stomp.over(socket);
+    stompClient.heartbeat.outgoing = 5000;
+    stompClient.heartbeat.incoming = 0;
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
@@ -145,11 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let tokenText = document.getElementById('token');
     let token = localStorage.getItem('token');
     let data = tokenText.value;
-    console.log(data);
     $(tokenText).val(token);
     if (token === null && isEmpty(data)) {
         window.location.replace("https://accounts.google.com/o/oauth2/auth?approval_prompt=force&scope=email&client_id=92132449986-f85cvq6rmtl8u7g24on48g562p98db8p.apps.googleusercontent.com&redirect_uri=" + urlBaseNoSlash + "&response_type=code&access_type=offline");
-        //$(tokenText).show();
     } else {
         if (!isEmpty(data)) {
             $(tokenText).val(data);
@@ -193,10 +193,15 @@ function isNotify(messageOutput) {
     return isFavoriteContact(messageOutput) || isFavoriteApp(messageOutput);
 }
 
-function get(URL, data) {
+function saveConfigs() {
+    configs.applicationNotify = document.getElementById('app-notify').value;
+    configs.favoriteContact = document.getElementById('text').value;
+    post(urlBase + 'configs', configs);
+}
+
+function get(URL) {
     return new Promise(((resolve, reject) => {
         try {
-            console.log(data)
             fetch(URL, {
                 method: 'GET',
                 headers: {
@@ -207,6 +212,30 @@ function get(URL, data) {
             }).then(value => {
                 let user = value.json();
                 resolve(user);
+            }).catch(reason => {
+                console.log(reason)
+                reject(reason)
+            })
+        } catch (e) {
+            console.log(e)
+            reject("Opssssssssssss")
+        }
+    }))
+}
+
+function post(URL, info) {
+    return new Promise(((resolve, reject) => {
+        try {
+            console.log(JSON.stringify(info))
+            fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + document.getElementById('token').value
+                },
+                body: JSON.stringify(info)
+            }).then(value => {
+                resolve(value);
             }).catch(reason => {
                 console.log(reason)
                 reject(reason)
