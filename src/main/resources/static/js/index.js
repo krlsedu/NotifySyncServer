@@ -115,7 +115,6 @@ function getmessage(id) {
 }
 
 function showMessageOutput(messageOutput) {
-    var ul = document.querySelector("ul");
     var li = document.createElement("li");
     if (isFavoriteContact(messageOutput)) {
         li.className = 'list-group-item bg-green';
@@ -127,7 +126,7 @@ function showMessageOutput(messageOutput) {
         }
     }
     li.textContent = messageOutput.app + " - " + messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")";
-    ul.appendChild(li);
+    $("ul").prepend(li);
     notify(messageOutput)
 }
 
