@@ -23,8 +23,8 @@ public class ConfigsController {
     }
 
     @GetMapping("/configs")
-    private ResponseEntity<ConfigsDTO> getConfigs(Principal principal) {
-        return new ResponseEntity<>(conversor.toD(configsService.getConfigByUser(principal)), HttpStatus.OK);
+    private ResponseEntity<ConfigsDTO> getConfigs() {
+        return new ResponseEntity<>(conversor.toD(configsService.getConfigByUser()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/configs", consumes = "application/json")

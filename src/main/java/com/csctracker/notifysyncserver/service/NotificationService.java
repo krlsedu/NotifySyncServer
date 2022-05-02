@@ -6,7 +6,6 @@ import com.csctracker.notifysyncserver.dto.OutputMessage;
 import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.repository.NotificationSyncRepository;
 import com.csctracker.securitycore.dto.Conversor;
-import com.csctracker.securitycore.model.User;
 import com.csctracker.securitycore.service.UserInfoService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,13 +31,15 @@ public class NotificationService {
     private final Conversor<Message, MessageDTO> conversorMessageDTO;
     private final UserInfoService userInfoService;
     private final NotificationSyncRepository notificationSyncRepository;
-
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, SimpMessagingTemplate simpMessagingTemplate) {
+    private final ConfigsService configsService;
+
+    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, SimpMessagingTemplate simpMessagingTemplate, ConfigsService configsService) {
         this.userInfoService = userInfoService;
         this.notificationSyncRepository = notificationSyncRepository;
         this.simpMessagingTemplate = simpMessagingTemplate;
+        this.configsService = configsService;
         objectMapper = new ObjectMapper()
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -97,13 +98,9 @@ public class NotificationService {
         messageDTO.setFrom(notificationSyncDTO.getTitle());
         messageDTO.setText(notificationSyncDTO.getText());
         messageDTO.setApp(notificationSyncDTO.getAppName());
-        messageDTO.setTime(new SimpleDateFormat("HH:mm:ss").format(new Date(notificationSyncDTO.getSystemTime())));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        simpleDateFormat.setTimeZone(configsService.getTimeZone());
+        messageDTO.setTime(simpleDateFormat.format(new Date(notificationSyncDTO.getSystemTime())));
         return conversor.toD(messageDTO);
-    }
-
-    public User getUser(Principal principal) {
-        User user = userInfoService.getUser(principal);
-        user.setPassword(null);
-        return user;
     }
 }

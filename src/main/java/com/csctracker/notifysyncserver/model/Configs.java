@@ -25,6 +25,10 @@ public class Configs {
     @Type(type = "org.hibernate.type.TextType")
     private String applicationNotify;
 
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    private String timeZone;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

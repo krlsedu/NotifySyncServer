@@ -7,6 +7,7 @@ import com.csctracker.securitycore.service.UserInfoService;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.TimeZone;
 
 @Service
 public class ConfigsService {
@@ -19,8 +20,8 @@ public class ConfigsService {
         this.userInfoService = userInfoService;
     }
 
-    public Configs getConfigByUser(Principal principal) {
-        return configsRepository.findByUser(userInfoService.getUser(principal));
+    public Configs getConfigByUser() {
+        return configsRepository.findByUser(userInfoService.getUser());
     }
 
     public void save(Configs configs, Principal principal) {
@@ -28,9 +29,40 @@ public class ConfigsService {
         if (!configsRepository.existsByUser(user)) {
             configs.setUser(user);
         } else {
-            configs.setId(configsRepository.findByUser(user).getId());
+            Configs byUser = configsRepository.findByUser(user);
+            configs.setId(byUser.getId());
             configs.setUser(user);
+            if (configs.getTimeZone() == null) {
+                configs.setTimeZone(byUser.getTimeZone());
+            }
+            if (configs.getFavoriteContact() == null) {
+                configs.setFavoriteContact(byUser.getFavoriteContact());
+            }
+            if (configs.getApplicationNotify() == null) {
+                configs.setApplicationNotify(byUser.getApplicationNotify());
+            }
+            if (configs.getTimeZone() == null) {
+                configs.setTimeZone("America/Sao_Paulo");
+            }
         }
         configsRepository.save(configs);
+    }
+
+
+    public TimeZone getTimeZone() {
+        String timeZone = null;
+        try {
+            timeZone = getConfigByUser().getTimeZone();
+        } catch (Exception e) {
+            //
+        }
+
+        TimeZone timeZone1 = null;
+        try {
+            timeZone1 = TimeZone.getTimeZone(timeZone == null ? "America/Sao_Paulo" : timeZone);
+        } catch (Exception e) {
+            timeZone1 = TimeZone.getTimeZone("America/Sao_Paulo");
+        }
+        return timeZone1;
     }
 }
