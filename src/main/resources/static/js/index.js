@@ -9,6 +9,7 @@ let socket = null;
 let server = 'notify.csctracker.com';
 let secure = 's';
 let urlBase = 'http' + secure + '://' + server + '/';
+let urlBaseNoSlash = 'http' + secure + '://' + server;
 let configs;
 
 function connect() {
@@ -147,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(data);
     $(tokenText).val(token);
     if (token === null && isEmpty(data)) {
-        window.location.replace("https://accounts.google.com/o/oauth2/auth?approval_prompt=force&scope=email&client_id=92132449986-f85cvq6rmtl8u7g24on48g562p98db8p.apps.googleusercontent.com&redirect_uri=" + urlBase + "&response_type=code&access_type=offline");
+        window.location.replace("https://accounts.google.com/o/oauth2/auth?approval_prompt=force&scope=email&client_id=92132449986-f85cvq6rmtl8u7g24on48g562p98db8p.apps.googleusercontent.com&redirect_uri=" + urlBaseNoSlash + "&response_type=code&access_type=offline");
         //$(tokenText).show();
     } else {
         if (!isEmpty(data)) {
