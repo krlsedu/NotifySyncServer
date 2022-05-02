@@ -26,19 +26,36 @@
                 <h1>Notificações</h1>
             </header>
             <div class="input-group mb-2">
-                <input aria-describedby="basic-addon2" aria-label="Add an item" class="form-control" id="token"
-                       placeholder="Seu token?" type="text">
-                <input id="text" type="text" class="form-control" placeholder="Notificar quando?"
-                       aria-describedby="basic-addon2" aria-label="Add an item">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-info" id="connect" type="button" onclick="connect();">Connect
-                    </button>
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-info" id="disconnect" type="button" disabled="disabled"
-                            onclick="disconnect();">Disconnect
-                    </button>
-                </div>
+
+                <form action="#" th:object="${tokenDTO}">
+                    <div class="input-group mb-2">
+                        <label class="col-form-label" for="text">Favorite contact:</label>
+                        <input aria-describedby="basic-addon2" aria-label="Add an item" class="form-control" id="text"
+                               placeholder="Notificar quando?" type="text"/>
+                    </div>
+                    <div class="input-group mb-2">
+                        <label class="col-form-label" for="app-notify">App to notify:</label>
+                        <input aria-describedby="basic-addon2" aria-label="Add an item" class="form-control"
+                               id="app-notify"
+                               placeholder="Notificar quando?" type="text"/>
+                    </div>
+                    <div class="input-group mb-2">
+                        <button class="btn btn-outline-info" id="save" onclick="connect();" type="button">Save
+                        </button>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-info" id="connect" onclick="connect();" type="button">Connect
+                            </button>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-info" disabled="disabled" id="disconnect"
+                                    onclick="disconnect();"
+                                    type="button">Disconnect
+                            </button>
+                        </div>
+                    </div>
+                    <input aria-describedby="basic-addon2" aria-label="Add an item" class="form-control" id="token"
+                           placeholder="Seu token?" th:field="*{accessToken}" type="hidden"/>
+                </form>
             </div>
 
         </div>

@@ -29,6 +29,8 @@ function connect() {
         localStorage.setItem('configs', configs);
         let textText = document.getElementById('text');
         $(textText).val(configs.favoriteContact);
+        let appNotify = document.getElementById('app-notify');
+        $(appNotify).val(configs.applicationNotify);
     })
     localStorage.setItem('text', document.getElementById('text').value);
 }
@@ -141,10 +143,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let tokenText = document.getElementById('token');
     let token = localStorage.getItem('token');
-    $(tokenText).val(token)
-    if (token === null) {
-        $(tokenText).show();
+    let data = tokenText.value;
+    console.log(data);
+    $(tokenText).val(token);
+    if (token === null && isEmpty(data)) {
+        window.location.replace("https://accounts.google.com/o/oauth2/auth?approval_prompt=force&scope=email&client_id=92132449986-f85cvq6rmtl8u7g24on48g562p98db8p.apps.googleusercontent.com&redirect_uri=" + urlBase + "&response_type=code&access_type=offline");
+        //$(tokenText).show();
     } else {
+        if (!isEmpty(data)) {
+            $(tokenText).val(data);
+            localStorage.setItem('token', data);
+        }
         $(tokenText).hide();
         connect();
     }

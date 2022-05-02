@@ -83,6 +83,9 @@ public class NotificationService {
 
     public OutputMessage get(Principal principal, String id) throws JsonProcessingException {
         var message = notificationSyncRepository.findByUserAndUuid(userInfoService.getUser(principal), id);
+        if (message == null) {
+            message = new Message();
+        }
         message.setDateSent(new Date());
         notificationSyncRepository.save(message);
         var messageDTO = conversorMessageDTO.toD(message);
