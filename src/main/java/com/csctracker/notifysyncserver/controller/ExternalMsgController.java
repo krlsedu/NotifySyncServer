@@ -26,6 +26,7 @@ public class ExternalMsgController {
     }
 
     @PostMapping("/message")
+    @ResponseStatus(HttpStatus.CREATED)
     public void envia(@RequestBody MessageDTO messageDTO, Principal principal) {
         notificationService.grava(messageDTO, principal);
     }
