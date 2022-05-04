@@ -58,6 +58,7 @@ public class NotificationService {
         entity.setUser(userInfoService.getUser(principal));
         entity.setUuid(UUID.randomUUID().toString());
         entity.setDateSynced(new Date());
+        log.info("Gravando mensagem: {}", entity.getUuid());
         sendToCLient(entity);
         notificationSyncRepository.save(entity);
     }
