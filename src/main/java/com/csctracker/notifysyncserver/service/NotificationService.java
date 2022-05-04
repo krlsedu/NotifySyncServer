@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class NotificationService {
 
     private final ObjectMapper objectMapper;
@@ -53,13 +56,15 @@ public class NotificationService {
         Message entity = conversorMessageDTO.toE(messageDTO);
         entity.setUser(userInfoService.getUser(principal));
         entity.setUuid(UUID.randomUUID().toString());
+        entity.setDateSynced(new Date());
         sendToCLient(entity);
         notificationSyncRepository.save(entity);
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 5, timeUnit = TimeUnit.SECONDS)
     public void sendToCLient() {
         Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
+        log.info("sendToCLient {}", date);
         notificationSyncRepository.findByDateSentIsNullAndDateSyncedAfter(date).forEach(this::sendToCLient);
     }
 

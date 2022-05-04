@@ -4,6 +4,7 @@ import com.csctracker.securitycore.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -13,12 +14,12 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @Entity
+@ToString
 @Table(name = "messages")
 public class Message {
     @Id
     @GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)
     private Long id;
-
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
