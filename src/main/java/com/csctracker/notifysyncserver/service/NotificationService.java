@@ -35,8 +35,9 @@ public class NotificationService {
     private final UserInfoService userInfoService;
     private final NotificationSyncRepository notificationSyncRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
-
     private final ConfigsService configsService;
+
+    private Date lastSync = new Date();
 
     public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, SimpMessagingTemplate simpMessagingTemplate, ConfigsService configsService) {
         this.userInfoService = userInfoService;
@@ -61,14 +62,16 @@ public class NotificationService {
         notificationSyncRepository.save(entity);
     }
 
-    @Scheduled(fixedRate = 5, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
     public void sendToCLient() {
         Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
-        log.info("sendToCLient {}", date);
-        notificationSyncRepository.findByDateSentIsNullAndDateSyncedAfter(date).forEach(this::sendToCLient);
+        log.info("sendToCLient {} - {}", date, lastSync);
+        notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
+        lastSync = new Date();
     }
 
     public void sendToCLient(Message message) {
+        log.info("sendToCLient {}", message.getUuid());
         simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(), new OutputMessage(message.getUuid(), null, null, null, null));
     }
 

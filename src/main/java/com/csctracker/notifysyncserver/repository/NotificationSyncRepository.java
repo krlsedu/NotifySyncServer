@@ -10,7 +10,7 @@ import java.util.List;
 public interface NotificationSyncRepository extends JpaRepository<Message, Long> {
     List<Message> findByUserAndDateSentIsNull(User user);
 
-    List<Message> findByDateSentIsNullAndDateSyncedAfter(Date date);
+    List<Message> findByDateSentIsNullAndDateSyncedBetween(Date date, Date date1);
 
     Message findByUserAndUuid(User user, String uuid);
 }
