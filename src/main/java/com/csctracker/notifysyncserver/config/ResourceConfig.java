@@ -22,6 +22,7 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/stock-ticks/websocket/**").permitAll()
                 .antMatchers("/favicon.ico").permitAll()
+                .antMatchers("/actuator/**").permitAll()
         ;
     }
 }
