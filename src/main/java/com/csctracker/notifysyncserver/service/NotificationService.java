@@ -7,6 +7,7 @@ import com.csctracker.notifysyncserver.dto.OutputMessage;
 import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.repository.NotificationSyncRepository;
 import com.csctracker.securitycore.service.UserInfoService;
+import com.csctracker.service.ConfigsService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

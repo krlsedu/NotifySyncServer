@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.TimeZone;
 
-@Service("configsServiceNotifySyncServer")
-public class ConfigsService {
+@Service
+public class ConfigService {
     private final ConfigsRepository configsRepository;
 
     private final UserInfoService userInfoService;
 
-    public ConfigsService(ConfigsRepository configsRepository, UserInfoService userInfoService) {
+    public ConfigService(ConfigsRepository configsRepository, UserInfoService userInfoService) {
         this.configsRepository = configsRepository;
         this.userInfoService = userInfoService;
     }
