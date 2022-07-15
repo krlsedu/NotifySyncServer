@@ -1,9 +1,9 @@
 package com.csctracker.notifysyncserver.controller;
 
-import com.csctracker.securitycore.dto.TokenDTO;
+import com.csctracker.dto.TokenDTO;
 import com.csctracker.securitycore.service.AuthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.UnirestException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan(basePackages = {"com.csctracker.securitycore", "com.csctracker.notifysyncserver"})
+@ComponentScan(basePackages = {"com.csctracker", "com.csctracker.securitycore", "com.csctracker.notifysyncserver"})
 public class SpringBootApp extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(SpringBootApp.class, args);

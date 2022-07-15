@@ -1,15 +1,15 @@
 package com.csctracker.notifysyncserver.service;
 
-import com.csctracker.notifysyncserver.model.Configs;
-import com.csctracker.notifysyncserver.repository.ConfigsRepository;
-import com.csctracker.securitycore.model.User;
+import com.csctracker.model.Configs;
+import com.csctracker.model.User;
+import com.csctracker.repository.ConfigsRepository;
 import com.csctracker.securitycore.service.UserInfoService;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.TimeZone;
 
-@Service
+@Service("configsServiceNotifySyncServer")
 public class ConfigsService {
     private final ConfigsRepository configsRepository;
 

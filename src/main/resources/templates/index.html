@@ -2,83 +2,16 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link href="css/csctracker.css" rel="stylesheet">
-
-    <title>Notifications</title>
-
-    <script data-th-src="@{js/sockjs-0.3.4.js}"></script>
-    <script data-th-src="@{js/stomp.js}"></script>
     <script data-th-src="@{js/index.js}"></script>
-    <script data-th-src="@{js/bootstrap.bundle.min.js}"></script>
-    <script data-th-src="@{js/http_code.jquery.com_jquery-3.1.0.js}"></script>
-    <script data-th-src="@{js/http_code.jquery.com_jquery-3.3.1.slim.js}"></script>
 </head>
 
 <body>
 
 <div class="container">
     <div class="row justify-center">
-        <div class="col-12">
-            <header>
-                <h1>Notificações</h1>
-            </header>
-            <div class="input-group mb-2">
-
-                <form action="#" th:object="${tokenDTO}">
-                    <div class="input-group mb-2">
-                        <label class="col-form-label" for="text">Favorite contact:</label>
-                        <input aria-describedby="basic-addon2" aria-label="Add an item" class="form-control" id="text"
-                               placeholder="Notificar quando?" type="text"/>
-                    </div>
-                    <div class="input-group mb-2">
-                        <label class="col-form-label" for="app-notify">App to notify:</label>
-                        <input aria-describedby="basic-addon2" aria-label="Add an item" class="form-control"
-                               id="app-notify"
-                               placeholder="Notificar quando?" type="text"/>
-                    </div>
-                    <div class="input-group mb-2">
-                        <button class="btn btn-outline-info" id="save" onclick="saveConfigs();" type="button">Save
-                        </button>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-info" id="connect" onclick="connect();" type="button">Connect
-                            </button>
-                        </div>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-info" disabled="disabled" id="disconnect"
-                                    onclick="disconnect();"
-                                    type="button">Disconnect
-                            </button>
-                        </div>
-                    </div>
-                    <input aria-describedby="basic-addon2" aria-label="Add an item" class="form-control" id="token"
-                           placeholder="Seu token?" th:field="*{accessToken}" type="hidden"/>
-                </form>
-            </div>
-
-        </div>
-        <div class="col-12">
-            <ul class="list-group">
-            </ul>
-        </div>
+        deprecated
     </div>
 </div>
 
 </body>
 </html>
-
-
-<script>
-    var button = document.getElementById("connect");
-    var input = document.getElementById("text");
-    var ul = document.querySelector("ul");
-
-    button.addEventListener("click", function () {
-        var li = document.createElement("li");
-        li.className = 'list-group-item';
-        li.textContent = input.value;
-        ul.appendChild(li);
-    })
-</script>

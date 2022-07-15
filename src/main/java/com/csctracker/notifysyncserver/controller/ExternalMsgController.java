@@ -1,10 +1,10 @@
 package com.csctracker.notifysyncserver.controller;
 
+import com.csctracker.dto.Conversor;
 import com.csctracker.notifysyncserver.dto.MessageDTO;
 import com.csctracker.notifysyncserver.dto.OutputMessage;
 import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.service.NotificationService;
-import com.csctracker.securitycore.dto.Conversor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

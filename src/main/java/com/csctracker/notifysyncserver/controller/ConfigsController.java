@@ -1,9 +1,9 @@
 package com.csctracker.notifysyncserver.controller;
 
+import com.csctracker.dto.Conversor;
+import com.csctracker.model.Configs;
 import com.csctracker.notifysyncserver.dto.ConfigsDTO;
-import com.csctracker.notifysyncserver.model.Configs;
 import com.csctracker.notifysyncserver.service.ConfigsService;
-import com.csctracker.securitycore.dto.Conversor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

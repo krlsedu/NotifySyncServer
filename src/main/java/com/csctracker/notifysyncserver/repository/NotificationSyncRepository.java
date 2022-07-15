@@ -1,7 +1,7 @@
 package com.csctracker.notifysyncserver.repository;
 
+import com.csctracker.model.User;
 import com.csctracker.notifysyncserver.model.Message;
-import com.csctracker.securitycore.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;

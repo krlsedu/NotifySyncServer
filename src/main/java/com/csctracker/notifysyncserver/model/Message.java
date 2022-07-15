@@ -1,6 +1,6 @@
 package com.csctracker.notifysyncserver.model;
 
-import com.csctracker.securitycore.model.User;
+import com.csctracker.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

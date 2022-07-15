@@ -1,11 +1,11 @@
 package com.csctracker.notifysyncserver.service;
 
+import com.csctracker.dto.Conversor;
 import com.csctracker.notifysyncserver.dto.MessageDTO;
 import com.csctracker.notifysyncserver.dto.NotificationSyncDTO;
 import com.csctracker.notifysyncserver.dto.OutputMessage;
 import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.repository.NotificationSyncRepository;
-import com.csctracker.securitycore.dto.Conversor;
 import com.csctracker.securitycore.service.UserInfoService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
