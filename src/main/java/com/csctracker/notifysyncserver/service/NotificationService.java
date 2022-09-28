@@ -57,7 +57,15 @@ public class NotificationService {
     public void grava(MessageDTO messageDTO, Principal principal) {
         Message entity = conversorMessageDTO.toE(messageDTO);
         entity.setUser(userInfoService.getUser(principal));
-        entity.setUuid(UUID.randomUUID().toString());
+        if (entity.getUuid() == null) {
+            entity.setUuid(UUID.randomUUID().toString());
+        }
+        if (entity.getFrom() == null) {
+            entity.setFrom(entity.getApp());
+        }
+        if (entity.getDateSent() == null) {
+            entity.setDateSent(new Date());
+        }
         entity.setDateSynced(new Date());
         log.info("Gravando mensagem: {}", entity.getUuid());
         sendToCLient(entity);
@@ -74,7 +82,8 @@ public class NotificationService {
 
     public void sendToCLient(Message message) {
         log.info("sendToCLient {}", message.getUuid());
-        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(), new OutputMessage(message.getUuid(), null, null, null, null));
+        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
+                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null));
     }
 
     public List<OutputMessage> get(Principal principal) throws JsonProcessingException {
@@ -104,13 +113,22 @@ public class NotificationService {
     }
 
     public OutputMessage convertMessage(MessageDTO messageDTO) throws JsonProcessingException {
-        NotificationSyncDTO notificationSyncDTO = objectMapper.readValue(messageDTO.getText(), NotificationSyncDTO.class);
-        messageDTO.setFrom(notificationSyncDTO.getTitle());
-        messageDTO.setText(notificationSyncDTO.getText());
-        messageDTO.setApp(notificationSyncDTO.getAppName());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         simpleDateFormat.setTimeZone(configsService.getTimeZone());
-        messageDTO.setTime(simpleDateFormat.format(new Date(notificationSyncDTO.getSystemTime())));
-        return conversor.toD(messageDTO);
+        switch (messageDTO.getApp()) {
+            case "andorid-notification-log":
+                NotificationSyncDTO notificationSyncDTO = objectMapper.readValue(messageDTO.getText(), NotificationSyncDTO.class);
+                messageDTO.setFrom(notificationSyncDTO.getTitle());
+                messageDTO.setText(notificationSyncDTO.getText());
+                messageDTO.setApp(notificationSyncDTO.getAppName());
+                messageDTO.setTime(simpleDateFormat.format(new Date(notificationSyncDTO.getSystemTime())));
+                return conversor.toD(messageDTO);
+            default:
+                if (messageDTO.getFrom() == null) {
+                    messageDTO.setFrom(messageDTO.getApp());
+                }
+                messageDTO.setTime(simpleDateFormat.format(new Date()));
+                return conversor.toD(messageDTO);
+        }
     }
 }

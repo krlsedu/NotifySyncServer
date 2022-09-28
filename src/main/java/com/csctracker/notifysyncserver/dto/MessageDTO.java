@@ -8,6 +8,7 @@ public class MessageDTO {
     private String from;
     private String text;
     private String app;
+    private String operation;
     private String time;
     private String uuid;
     private NotificationSyncDTO notificationSyncDTO;

@@ -36,6 +36,10 @@ public class Message {
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
+    private String operation;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "notfy_time")
     private String time;
     private Date dateSynced;
