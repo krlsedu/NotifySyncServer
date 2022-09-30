@@ -10,5 +10,6 @@ import lombok.Setter;
 public class ConfigsDTO {
     private String favoriteContact;
     private String applicationNotify;
+    private String configs;
     private String timeZone;
 }
