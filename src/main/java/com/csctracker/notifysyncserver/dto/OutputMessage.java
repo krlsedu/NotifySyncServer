@@ -17,6 +17,7 @@ public class OutputMessage {
     private String time;
     private String app;
     private String operation;
+    private String data;
 
     public String getId() {
         return uuid;

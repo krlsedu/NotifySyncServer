@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -83,7 +85,7 @@ public class NotificationService {
     public void sendToCLient(Message message) {
         log.info("sendToCLient {}", message.getUuid());
         simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
-                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null));
+                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null));
     }
 
     public List<OutputMessage> get(Principal principal) throws JsonProcessingException {
@@ -123,10 +125,54 @@ public class NotificationService {
                 messageDTO.setApp(notificationSyncDTO.getAppName());
                 messageDTO.setTime(simpleDateFormat.format(new Date(notificationSyncDTO.getSystemTime())));
                 return conversor.toD(messageDTO);
-            default:
+            case "CscTrackerInvest":
                 if (messageDTO.getFrom() == null) {
                     messageDTO.setFrom(messageDTO.getApp());
                 }
+                messageDTO.setTime(simpleDateFormat.format(new Date()));
+                return conversor.toD(messageDTO);
+            case "CscTrackerDesktop":
+                messageDTO.setApp(messageDTO.getFrom());
+                messageDTO.setTime(simpleDateFormat.format(new Date()));
+                var notification = new JSONObject(messageDTO.getText());
+
+                JSONObject binding = notification.getJSONObject("visual").getJSONObject("binding");
+                var template = binding.get("template").toString();
+                switch (template) {
+                    case "ToastGeneric":
+                        var sb = new StringBuilder();
+                        var count = new AtomicInteger();
+                        binding.getJSONArray("text").forEach(o -> {
+                            if (count.get() == 0) {
+                                messageDTO.setFrom(o.toString().trim());
+                            } else {
+                                sb.append(o.toString().trim()).append("\n");
+                            }
+                            count.getAndIncrement();
+                        });
+                        messageDTO.setText(sb.toString());
+                        break;
+                    case "ToastImageAndText04":
+                        var sbs = new StringBuilder();
+                        var count2 = new AtomicInteger();
+                        binding.getJSONArray("text").forEach(o -> {
+                            var obj = new JSONObject(o.toString());
+                            var text = obj.get("").toString();
+                            if (count2.get() == 0) {
+                                messageDTO.setFrom(text);
+                            } else {
+                                sbs.append(text).append("\n");
+                            }
+                            count2.getAndIncrement();
+                        });
+                        messageDTO.setText(sbs.toString());
+                        break;
+                    default:
+                        messageDTO.setText(binding.getJSONArray("text").toString());
+                        break;
+                }
+                return conversor.toD(messageDTO);
+            default:
                 messageDTO.setTime(simpleDateFormat.format(new Date()));
                 return conversor.toD(messageDTO);
         }

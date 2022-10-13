@@ -11,5 +11,6 @@ public class MessageDTO {
     private String operation;
     private String time;
     private String uuid;
+    private String data;
     private NotificationSyncDTO notificationSyncDTO;
 }
