@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -106,13 +103,15 @@ public class NotificationService {
     }
 
     public List<OutputMessage> getMessages() throws JsonProcessingException {
-        List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullOrderByDateSynced(userInfoService.getUser(), PageRequest.ofSize(100));
-
+        List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullOrderByIdDesc(userInfoService.getUser(), PageRequest.ofSize(100));
+        messages.sort(Comparator.comparing(Message::getId));
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
         List<OutputMessage> outputMessages = new ArrayList<>();
         for (MessageDTO messageDTO : messageDTOS) {
-            outputMessages.add(convertMessage(messageDTO));
+            OutputMessage e = convertMessage(messageDTO);
+            e.setData(null);
+            outputMessages.add(e);
         }
         return outputMessages;
     }
