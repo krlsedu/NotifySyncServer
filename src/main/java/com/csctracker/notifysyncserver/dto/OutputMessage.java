@@ -18,6 +18,7 @@ public class OutputMessage {
     private String app;
     private String operation;
     private String data;
+    private String machine;
 
     public String getId() {
         return uuid;

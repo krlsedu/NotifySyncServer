@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -85,7 +86,7 @@ public class NotificationService {
     public void sendToCLient(Message message) {
         log.info("sendToCLient {}", message.getUuid());
         simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
-                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null));
+                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null, null));
     }
 
     public List<OutputMessage> get(Principal principal) throws JsonProcessingException {
@@ -132,6 +133,7 @@ public class NotificationService {
                 messageDTO.setTime(simpleDateFormat.format(new Date()));
                 return conversor.toD(messageDTO);
             case "CscTrackerDesktop":
+                messageDTO.setMachine(messageDTO.getFrom());
                 messageDTO.setApp(messageDTO.getFrom());
                 messageDTO.setTime(simpleDateFormat.format(new Date()));
                 var notification = new JSONObject(messageDTO.getText());
@@ -146,7 +148,17 @@ public class NotificationService {
                             if (count.get() == 0) {
                                 messageDTO.setFrom(o.toString().trim());
                             } else {
-                                sb.append(o.toString().trim()).append("\n");
+                                try {
+                                    var objO = new JSONObject(o.toString());
+                                    var st = objO.get("placement").toString();
+                                    if (st.equals("attribution")) {
+                                        messageDTO.setApp(objO.get("").toString().trim());
+                                    } else {
+                                        sb.append(objO.get("").toString().trim());
+                                    }
+                                } catch (JSONException e) {
+                                    sb.append(o.toString().trim()).append("\n");
+                                }
                             }
                             count.getAndIncrement();
                         });
