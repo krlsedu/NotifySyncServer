@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,18 @@ public class NotificationService {
             message.setDateSent(new Date());
             notificationSyncRepository.save(message);
         }
+        List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
+
+        List<OutputMessage> outputMessages = new ArrayList<>();
+        for (MessageDTO messageDTO : messageDTOS) {
+            outputMessages.add(convertMessage(messageDTO));
+        }
+        return outputMessages;
+    }
+
+    public List<OutputMessage> getMessages() throws JsonProcessingException {
+        List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullOrderByDateSynced(userInfoService.getUser(), PageRequest.ofSize(100));
+
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
         List<OutputMessage> outputMessages = new ArrayList<>();

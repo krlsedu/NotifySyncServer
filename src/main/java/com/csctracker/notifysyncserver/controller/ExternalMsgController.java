@@ -36,6 +36,11 @@ public class ExternalMsgController {
         return new ResponseEntity<>(notificationService.get(principal), HttpStatus.OK);
     }
 
+    @GetMapping("/last-messages")
+    public ResponseEntity<List<OutputMessage>> getLastMessages() throws JsonProcessingException {
+        return new ResponseEntity<>(notificationService.getMessages(), HttpStatus.OK);
+    }
+
     @GetMapping("/message/{id}")
     public ResponseEntity<OutputMessage> get(Principal principal, @PathVariable String id) throws JsonProcessingException {
         return new ResponseEntity<>(notificationService.get(principal, id), HttpStatus.OK);
