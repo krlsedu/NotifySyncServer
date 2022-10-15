@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -168,7 +167,7 @@ public class NotificationService {
                                     } else {
                                         sb.append(objO.get("").toString().trim());
                                     }
-                                } catch (JSONException e) {
+                                } catch (Exception e) {
                                     sb.append(o.toString().trim()).append("\n");
                                 }
                             }
