@@ -197,6 +197,9 @@ public class NotificationService {
                 return conversor.toD(messageDTO);
             default:
                 messageDTO.setTime(simpleDateFormat.format(new Date()));
+                if (messageDTO.getFrom() == null) {
+                    messageDTO.setFrom("Unknown");
+                }
                 return conversor.toD(messageDTO);
         }
     }
