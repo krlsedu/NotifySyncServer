@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -191,7 +192,11 @@ public class NotificationService {
                         messageDTO.setText(sbs.toString());
                         break;
                     default:
-                        messageDTO.setText(binding.getJSONArray("text").toString());
+                        try {
+                            messageDTO.setText(binding.getJSONArray("text").toString());
+                        } catch (JSONException e) {
+                            messageDTO.setText(binding.toString());
+                        }
                         break;
                 }
                 return conversor.toD(messageDTO);
