@@ -128,10 +128,15 @@ public class NotificationService {
         return outputMessages;
     }
 
-    public List<OutputMessage> getMessagesDate(String date) throws JsonProcessingException, ParseException {
+    public List<OutputMessage> getMessagesDate(String date) throws JsonProcessingException {
         var sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS 00:00");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        var dateTo = sdf.parse(date);
+        Date dateTo = null;
+        try {
+            dateTo = sdf.parse(date);
+        } catch (ParseException e) {
+            return new ArrayList<>();
+        }
         List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullAndDateSyncedGreaterThanOrderByIdAsc(userInfoService.getUser(), dateTo);
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
