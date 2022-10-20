@@ -59,8 +59,8 @@ public class ExternalMsgController {
         return new ResponseEntity<>(notificationService.getMessagesDate(date), HttpStatus.OK);
     }
 
-    @GetMapping("/message/{id}")
-    public ResponseEntity<OutputMessage> get(Principal principal, @PathVariable String id) throws JsonProcessingException {
+    @GetMapping("/message")
+    public ResponseEntity<OutputMessage> get(Principal principal, @RequestParam(name = "id") String id) throws JsonProcessingException {
         return new ResponseEntity<>(notificationService.get(principal, id), HttpStatus.OK);
     }
 }
