@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -26,6 +27,7 @@ import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -72,7 +74,7 @@ public class NotificationService {
         }
         entity.setDateSynced(new Date());
         log.info("Gravando mensagem: {}", entity.getUuid());
-//        sendToCLient(entity);
+        sendToCLient(entity);
         try {
             publisher.publishEvent(new MessageEvent(convertMessage(conversorMessageDTO.toD(entity))));
         } catch (JsonProcessingException e) {
@@ -81,19 +83,19 @@ public class NotificationService {
         notificationSyncRepository.save(entity);
     }
 
-//    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
-//    public void sendToCLient() {
-//        Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
-//        log.info("sendToCLient {} - {}", date, lastSync);
-//        notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
-//        lastSync = new Date();
-//    }
-//
-//    public void sendToCLient(Message message) {
-//        log.info("sendToCLient {}", message.getUuid());
-//        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
-//                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null, null, null));
-//    }
+    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
+    public void sendToCLient() {
+        Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
+        log.info("sendToCLient {} - {}", date, lastSync);
+        notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
+        lastSync = new Date();
+    }
+
+    public void sendToCLient(Message message) {
+        log.info("sendToCLient {}", message.getUuid());
+        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
+                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null, null, null));
+    }
 
     public List<OutputMessage> get(Principal principal) throws JsonProcessingException {
         List<Message> messages = notificationSyncRepository.findByUserAndDateSentIsNull(userInfoService.getUser(principal));
