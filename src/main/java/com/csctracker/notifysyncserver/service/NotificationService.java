@@ -16,15 +16,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.security.Principal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -38,14 +39,16 @@ public class NotificationService {
     private final NotificationSyncRepository notificationSyncRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ConfigsService configsService;
+    private final ApplicationEventPublisher publisher;
 
     private Date lastSync = new Date();
 
-    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, SimpMessagingTemplate simpMessagingTemplate, ConfigsService configsService) {
+    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, ConfigsService configsService, SimpMessagingTemplate simpMessagingTemplate, ApplicationEventPublisher publisher) {
         this.userInfoService = userInfoService;
         this.notificationSyncRepository = notificationSyncRepository;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.configsService = configsService;
+        this.publisher = publisher;
         objectMapper = new ObjectMapper()
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -69,23 +72,28 @@ public class NotificationService {
         }
         entity.setDateSynced(new Date());
         log.info("Gravando mensagem: {}", entity.getUuid());
-        sendToCLient(entity);
+//        sendToCLient(entity);
+        try {
+            publisher.publishEvent(new MessageEvent(convertMessage(conversorMessageDTO.toD(entity))));
+        } catch (JsonProcessingException e) {
+            log.error("Erro ao converter mensagem para JSON", e);
+        }
         notificationSyncRepository.save(entity);
     }
 
-    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
-    public void sendToCLient() {
-        Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
-        log.info("sendToCLient {} - {}", date, lastSync);
-        notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
-        lastSync = new Date();
-    }
-
-    public void sendToCLient(Message message) {
-        log.info("sendToCLient {}", message.getUuid());
-        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
-                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null, null));
-    }
+//    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
+//    public void sendToCLient() {
+//        Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
+//        log.info("sendToCLient {} - {}", date, lastSync);
+//        notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
+//        lastSync = new Date();
+//    }
+//
+//    public void sendToCLient(Message message) {
+//        log.info("sendToCLient {}", message.getUuid());
+//        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
+//                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null, null, null));
+//    }
 
     public List<OutputMessage> get(Principal principal) throws JsonProcessingException {
         List<Message> messages = notificationSyncRepository.findByUserAndDateSentIsNull(userInfoService.getUser(principal));
@@ -102,9 +110,29 @@ public class NotificationService {
         return outputMessages;
     }
 
+    public Flux<OutputMessage> buscaTodos() throws JsonProcessingException {
+        return Flux.fromIterable(getMessages());
+    }
+
     public List<OutputMessage> getMessages() throws JsonProcessingException {
         List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullOrderByIdDesc(userInfoService.getUser(), PageRequest.ofSize(100));
         messages.sort(Comparator.comparing(Message::getId));
+        List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
+
+        List<OutputMessage> outputMessages = new ArrayList<>();
+        for (MessageDTO messageDTO : messageDTOS) {
+            OutputMessage e = convertMessage(messageDTO);
+            e.setData(null);
+            outputMessages.add(e);
+        }
+        return outputMessages;
+    }
+
+    public List<OutputMessage> getMessagesDate(String date) throws JsonProcessingException, ParseException {
+        var sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS 00:00");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        var dateTo = sdf.parse(date);
+        List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullAndDateSyncedGreaterThanOrderByIdAsc(userInfoService.getUser(), dateTo);
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
         List<OutputMessage> outputMessages = new ArrayList<>();
@@ -130,6 +158,9 @@ public class NotificationService {
     public OutputMessage convertMessage(MessageDTO messageDTO) throws JsonProcessingException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         simpleDateFormat.setTimeZone(configsService.getTimeZone());
+        if (messageDTO.getApp() == null) {
+            messageDTO.setApp("unknown");
+        }
         switch (messageDTO.getApp()) {
             case "andorid-notification-log":
                 NotificationSyncDTO notificationSyncDTO = objectMapper.readValue(messageDTO.getText(), NotificationSyncDTO.class);

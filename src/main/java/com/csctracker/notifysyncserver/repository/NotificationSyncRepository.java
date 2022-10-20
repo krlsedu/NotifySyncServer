@@ -16,5 +16,7 @@ public interface NotificationSyncRepository extends JpaRepository<Message, Long>
     Message findByUserAndUuid(User user, String uuid);
 
     List<Message> findByUserAndAppIsNotNullOrderByIdDesc(User user, Pageable pageable);
+
+    List<Message> findByUserAndAppIsNotNullAndDateSyncedGreaterThanOrderByIdAsc(User user, Date date);
 }
 

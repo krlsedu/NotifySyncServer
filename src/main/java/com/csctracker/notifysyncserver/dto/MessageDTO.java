@@ -2,6 +2,8 @@ package com.csctracker.notifysyncserver.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class MessageDTO {
     private Long id;
@@ -13,5 +15,6 @@ public class MessageDTO {
     private String uuid;
     private String data;
     private String machine;
+    private Date dateSynced;
     private NotificationSyncDTO notificationSyncDTO;
 }

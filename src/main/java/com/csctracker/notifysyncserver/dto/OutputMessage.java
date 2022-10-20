@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,6 +21,7 @@ public class OutputMessage {
     private String operation;
     private String data;
     private String machine;
+    private Date dateSynced;
 
     public String getId() {
         return uuid;
