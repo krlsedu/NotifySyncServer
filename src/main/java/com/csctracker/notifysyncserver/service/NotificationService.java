@@ -8,17 +8,18 @@ import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.repository.NotificationSyncRepository;
 import com.csctracker.securitycore.service.UserInfoService;
 import com.csctracker.service.ConfigsService;
+import com.csctracker.service.RequestInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import kong.unirest.Unirest;
 import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -39,16 +40,14 @@ public class NotificationService {
     private final Conversor<Message, MessageDTO> conversorMessageDTO;
     private final UserInfoService userInfoService;
     private final NotificationSyncRepository notificationSyncRepository;
-    private final SimpMessagingTemplate simpMessagingTemplate;
     private final ConfigsService configsService;
     private final ApplicationEventPublisher publisher;
 
     private Date lastSync = new Date();
 
-    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, ConfigsService configsService, SimpMessagingTemplate simpMessagingTemplate, ApplicationEventPublisher publisher) {
+    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, ConfigsService configsService, ApplicationEventPublisher publisher) {
         this.userInfoService = userInfoService;
         this.notificationSyncRepository = notificationSyncRepository;
-        this.simpMessagingTemplate = simpMessagingTemplate;
         this.configsService = configsService;
         this.publisher = publisher;
         objectMapper = new ObjectMapper()
@@ -93,8 +92,21 @@ public class NotificationService {
 
     public void sendToCLient(Message message) {
         log.info("sendToCLient {}", message.getUuid());
-        simpMessagingTemplate.convertAndSend("/topic/" + message.getUser().getEmail(),
-                new OutputMessage(message.getUuid(), null, null, null, message.getApp(), null, null, null, null));
+        var post = Unirest.post("http://rabbit:8080/notification");
+        var headers = RequestInfo.getHeaders();
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            switch (header.getKey().toLowerCase()) {
+                case "content-length":
+                    break;
+                default:
+                    post.header(header.getKey(), header.getValue());
+                    break;
+            }
+        }
+        var response = post
+                .body(message)
+                .asString();
+        response.ifFailure(e -> log.error("Erro ao enviar mensagem para o cliente", e));
     }
 
     public List<OutputMessage> get(Principal principal) throws JsonProcessingException {
