@@ -21,6 +21,7 @@ public class OutputMessage {
     private String operation;
     private String data;
     private String machine;
+    private Boolean force;
     private Date dateSynced;
 
     public String getId() {

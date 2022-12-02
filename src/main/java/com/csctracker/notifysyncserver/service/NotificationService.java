@@ -180,6 +180,9 @@ public class NotificationService {
         if (messageDTO.getApp() == null) {
             messageDTO.setApp("unknown");
         }
+        if (messageDTO.getForce() == null) {
+            messageDTO.setForce(false);
+        }
         switch (messageDTO.getApp()) {
             case "andorid-notification-log":
                 NotificationSyncDTO notificationSyncDTO = objectMapper.readValue(messageDTO.getText(), NotificationSyncDTO.class);
@@ -189,6 +192,16 @@ public class NotificationService {
                 messageDTO.setTime(simpleDateFormat.format(new Date(notificationSyncDTO.getSystemTime())));
                 return conversor.toD(messageDTO);
             case "CscTrackerInvest":
+                if (messageDTO.getOperation() == null) {
+                    messageDTO.setOperation("unknown");
+                }
+                switch (messageDTO.getOperation()) {
+                    case "buySellRecommendation":
+                        messageDTO.setForce(true);
+                        break;
+                    default:
+                        messageDTO.setForce(false);
+                }
                 if (messageDTO.getFrom() == null) {
                     messageDTO.setFrom(messageDTO.getApp());
                 }

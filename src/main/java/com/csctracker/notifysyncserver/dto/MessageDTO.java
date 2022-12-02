@@ -15,6 +15,7 @@ public class MessageDTO {
     private String uuid;
     private String data;
     private String machine;
+    private Boolean force;
     private Date dateSynced;
     private NotificationSyncDTO notificationSyncDTO;
 }
