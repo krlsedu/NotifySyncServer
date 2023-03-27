@@ -109,6 +109,7 @@ public class NotificationService {
         } catch (JsonProcessingException e) {
             log.error("Erro ao converter mensagem para JSON", e);
         }
+        log.info("Enviando mensagem para o cliente: {}", messageDTO);
         var response = post
                 .body(messageDTO)
                 .asString();
