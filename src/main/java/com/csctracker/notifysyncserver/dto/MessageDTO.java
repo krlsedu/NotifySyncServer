@@ -1,5 +1,6 @@
 package com.csctracker.notifysyncserver.dto;
 
+import com.csctracker.model.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -18,4 +19,7 @@ public class MessageDTO {
     private Boolean force;
     private Date dateSynced;
     private NotificationSyncDTO notificationSyncDTO;
+    private Date dateSent;
+    private User user;
+    private OutputMessageDTO outputMessageDTO;
 }

@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OutputMessage {
+public class OutputMessageDTO {
 
     private String uuid;
     private String from;

@@ -3,7 +3,7 @@ package com.csctracker.notifysyncserver.service;
 import com.csctracker.dto.Conversor;
 import com.csctracker.notifysyncserver.dto.MessageDTO;
 import com.csctracker.notifysyncserver.dto.NotificationSyncDTO;
-import com.csctracker.notifysyncserver.dto.OutputMessage;
+import com.csctracker.notifysyncserver.dto.OutputMessageDTO;
 import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.repository.NotificationSyncRepository;
 import com.csctracker.securitycore.service.UserInfoService;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NotificationService {
 
     private final ObjectMapper objectMapper;
-    private final Conversor<MessageDTO, OutputMessage> conversor;
+    private final Conversor<MessageDTO, OutputMessageDTO> conversor;
     private final Conversor<Message, MessageDTO> conversorMessageDTO;
     private final UserInfoService userInfoService;
     private final NotificationSyncRepository notificationSyncRepository;
@@ -55,7 +55,7 @@ public class NotificationService {
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, false)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        conversor = new Conversor<>(MessageDTO.class, OutputMessage.class);
+        conversor = new Conversor<>(MessageDTO.class, OutputMessageDTO.class);
         conversorMessageDTO = new Conversor<>(Message.class, MessageDTO.class);
     }
 
@@ -103,13 +103,19 @@ public class NotificationService {
                     break;
             }
         }
+        var messageDTO = conversorMessageDTO.toD(message);
+        try {
+            messageDTO.setOutputMessageDTO(convertMessage(messageDTO));
+        } catch (JsonProcessingException e) {
+            log.error("Erro ao converter mensagem para JSON", e);
+        }
         var response = post
-                .body(message)
+                .body(messageDTO)
                 .asString();
         response.ifFailure(e -> log.error("Erro ao enviar mensagem para o cliente", e));
     }
 
-    public List<OutputMessage> get(Principal principal) throws JsonProcessingException {
+    public List<OutputMessageDTO> get(Principal principal) throws JsonProcessingException {
         List<Message> messages = notificationSyncRepository.findByUserAndDateSentIsNull(userInfoService.getUser(principal));
         for (Message message : messages) {
             message.setDateSent(new Date());
@@ -117,32 +123,32 @@ public class NotificationService {
         }
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
-        List<OutputMessage> outputMessages = new ArrayList<>();
+        List<OutputMessageDTO> outputMessageDTOS = new ArrayList<>();
         for (MessageDTO messageDTO : messageDTOS) {
-            outputMessages.add(convertMessage(messageDTO));
+            outputMessageDTOS.add(convertMessage(messageDTO));
         }
-        return outputMessages;
+        return outputMessageDTOS;
     }
 
-    public Flux<OutputMessage> buscaTodos() throws JsonProcessingException {
+    public Flux<OutputMessageDTO> buscaTodos() throws JsonProcessingException {
         return Flux.fromIterable(getMessages());
     }
 
-    public List<OutputMessage> getMessages() throws JsonProcessingException {
+    public List<OutputMessageDTO> getMessages() throws JsonProcessingException {
         List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullOrderByIdDesc(userInfoService.getUser(), PageRequest.ofSize(100));
         messages.sort(Comparator.comparing(Message::getId));
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
-        List<OutputMessage> outputMessages = new ArrayList<>();
+        List<OutputMessageDTO> outputMessageDTOS = new ArrayList<>();
         for (MessageDTO messageDTO : messageDTOS) {
-            OutputMessage e = convertMessage(messageDTO);
+            OutputMessageDTO e = convertMessage(messageDTO);
             e.setData(null);
-            outputMessages.add(e);
+            outputMessageDTOS.add(e);
         }
-        return outputMessages;
+        return outputMessageDTOS;
     }
 
-    public List<OutputMessage> getMessagesDate(String date) throws JsonProcessingException {
+    public List<OutputMessageDTO> getMessagesDate(String date) throws JsonProcessingException {
         var sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS 00:00");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date dateTo = null;
@@ -154,16 +160,16 @@ public class NotificationService {
         List<Message> messages = notificationSyncRepository.findByUserAndAppIsNotNullAndDateSyncedGreaterThanOrderByIdAsc(userInfoService.getUser(), dateTo);
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
-        List<OutputMessage> outputMessages = new ArrayList<>();
+        List<OutputMessageDTO> outputMessageDTOS = new ArrayList<>();
         for (MessageDTO messageDTO : messageDTOS) {
-            OutputMessage e = convertMessage(messageDTO);
+            OutputMessageDTO e = convertMessage(messageDTO);
             e.setData(null);
-            outputMessages.add(e);
+            outputMessageDTOS.add(e);
         }
-        return outputMessages;
+        return outputMessageDTOS;
     }
 
-    public OutputMessage get(Principal principal, String id) throws JsonProcessingException {
+    public OutputMessageDTO get(Principal principal, String id) throws JsonProcessingException {
         var message = notificationSyncRepository.findByUserAndUuid(userInfoService.getUser(principal), id);
         if (message == null) {
             message = new Message();
@@ -174,7 +180,7 @@ public class NotificationService {
         return convertMessage(messageDTO);
     }
 
-    public OutputMessage convertMessage(MessageDTO messageDTO) throws JsonProcessingException {
+    public OutputMessageDTO convertMessage(MessageDTO messageDTO) throws JsonProcessingException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         simpleDateFormat.setTimeZone(configsService.getTimeZone());
         if (messageDTO.getApp() == null) {

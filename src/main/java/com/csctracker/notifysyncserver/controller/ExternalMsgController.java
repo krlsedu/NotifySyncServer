@@ -2,7 +2,7 @@ package com.csctracker.notifysyncserver.controller;
 
 import com.csctracker.dto.Conversor;
 import com.csctracker.notifysyncserver.dto.MessageDTO;
-import com.csctracker.notifysyncserver.dto.OutputMessage;
+import com.csctracker.notifysyncserver.dto.OutputMessageDTO;
 import com.csctracker.notifysyncserver.model.Message;
 import com.csctracker.notifysyncserver.service.NotificationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,22 +33,22 @@ public class ExternalMsgController {
     }
 
     @GetMapping("/messages")
-    public ResponseEntity<List<OutputMessage>> envia(Principal principal) throws JsonProcessingException {
+    public ResponseEntity<List<OutputMessageDTO>> envia(Principal principal) throws JsonProcessingException {
         return new ResponseEntity<>(notificationService.get(principal), HttpStatus.OK);
     }
 
     @GetMapping("/last-messages")
-    public ResponseEntity<List<OutputMessage>> getLastMessages() throws JsonProcessingException {
+    public ResponseEntity<List<OutputMessageDTO>> getLastMessages() throws JsonProcessingException {
         return new ResponseEntity<>(notificationService.getMessages(), HttpStatus.OK);
     }
 
     @GetMapping("/last-messages-date")
-    public ResponseEntity<List<OutputMessage>> getLastMessagesDate(@RequestParam(name = "date", required = false) String date) throws JsonProcessingException, ParseException {
+    public ResponseEntity<List<OutputMessageDTO>> getLastMessagesDate(@RequestParam(name = "date", required = false) String date) throws JsonProcessingException, ParseException {
         return new ResponseEntity<>(notificationService.getMessagesDate(date), HttpStatus.OK);
     }
 
     @GetMapping("/message")
-    public ResponseEntity<OutputMessage> get(Principal principal, @RequestParam(name = "id") String id) throws JsonProcessingException {
+    public ResponseEntity<OutputMessageDTO> get(Principal principal, @RequestParam(name = "id") String id) throws JsonProcessingException {
         return new ResponseEntity<>(notificationService.get(principal, id), HttpStatus.OK);
     }
 }
