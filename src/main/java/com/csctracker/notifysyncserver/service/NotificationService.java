@@ -105,7 +105,7 @@ public class NotificationService {
         }
         var messageDTO = conversorMessageDTO.toD(message);
         try {
-            messageDTO.setOutputMessageDTO(convertMessage(messageDTO));
+            messageDTO.setOutputMessageDTO(convertMessage(conversorMessageDTO.toD(message)));
         } catch (JsonProcessingException e) {
             log.error("Erro ao converter mensagem para JSON", e);
         }
