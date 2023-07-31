@@ -72,7 +72,7 @@ pipeline {
                             sh "git config --global user.email 'krlsedu@gmail.com'"
                             sh "git config --global user.name 'Carlos Eduardo Duarte Schwalm'"
                             sh "git commit -m 'Triggered Build: " + VERSION + "'"
-                            sh 'git push https://krlsedu:${password}@github.com/krlsedu/CscTrackerRabbit.git HEAD:' + env.BRANCH_NAME
+                            sh 'git push https://krlsedu:${password}@github.com/krlsedu/NotifySyncServer.git HEAD:' + env.BRANCH_NAME
                         }
                     }
                     env.VERSION_NAME = VERSION
