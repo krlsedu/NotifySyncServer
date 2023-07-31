@@ -61,13 +61,13 @@ pipeline {
                         VERSION = VERSION + '-SNAPSHOT'
                     }
 
-                    echo "Creating a new tag"
-                    sh 'git pull origin master'
-                    sh 'mvn versions:set versions:commit -DnewVersion=' + VERSION
-                    sh 'mvn clean install package -DskipTests'
-
                     withCredentials([usernamePassword(credentialsId: 'gitHub', passwordVariable: 'password', usernameVariable: 'user')]) {
                         script {
+
+                            echo "Creating a new tag"
+                            sh 'git pull origin master'
+                            sh 'mvn versions:set versions:commit -DnewVersion=' + VERSION
+                            sh 'mvn clean install package -DskipTests'
                             sh "git add ."
                             sh "git config --global user.email 'krlsedu@gmail.com'"
                             sh "git config --global user.name 'Carlos Eduardo Duarte Schwalm'"
@@ -102,12 +102,12 @@ pipeline {
             }
         }
 
-        stage('Service update'){
+        stage('Service update') {
             agent any
             when {
                 expression { env.RELEASE_COMMIT != '0' }
             }
-            steps{
+            steps {
                 sh 'docker service update --image krlsedu/csctracker-notify-sync:' + env.VERSION_NAME + ' csctracker_services_notify'
             }
         }
