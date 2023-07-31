@@ -65,7 +65,7 @@ pipeline {
                         script {
 
                             echo "Creating a new tag"
-                            sh 'git pull origin master'
+                            sh 'git pull https://krlsedu:${password}@github.com/krlsedu/NotifySyncServer.git HEAD:' + env.BRANCH_NAME
                             sh 'mvn versions:set versions:commit -DnewVersion=' + VERSION
                             sh 'mvn clean install package -DskipTests'
                             sh "git add ."
