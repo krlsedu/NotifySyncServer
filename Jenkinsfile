@@ -119,7 +119,7 @@ pipeline {
                                     httpMode: 'POST', quiet: true,
                                     requestBody: '''{
                                                        "app" : "Jenkins",
-                                                       "text" : "Iniciada a atualização do serviço ''' + env.SERVICE_NAME + ''' para a versão: "''' + env.VERSION_NAME + '''
+                                                       "text" : "Iniciada a atualização do serviço ''' + env.SERVICE_NAME + ''' para a versão: ''' + env.VERSION_NAME + '''"
                                                     }''',
                                     customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
                                     url: 'http://192.168.15.48:8101/notify-sync/message'
@@ -129,7 +129,7 @@ pipeline {
                                     httpMode: 'POST', quiet: true,
                                     requestBody: '''{
                                                        "app" : "Jenkins",
-                                                       "text" : "O serviço ''' + env.SERVICE_NAME + ''' fo atualizado com sucesso para a versão: "''' + env.VERSION_NAME + '''
+                                                       "text" : "O serviço ''' + env.SERVICE_NAME + ''' fo atualizado com sucesso para a versão: ''' + env.VERSION_NAME + '''"
                                                     }''',
                                     customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
                                     url: 'http://192.168.15.48:8101/notify-sync/message'
