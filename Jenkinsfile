@@ -34,7 +34,7 @@ pipeline {
                                                        "text" : "New build on service ''' + env.SERVICE_NAME + ''' branch ''' + env.BRANCH_NAME + ''' started"
                                                     }''',
                                 customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
-                                url: 'http://192.168.15.48:8101/notify-sync/message'
+                                url: 'https://gtw.csctracker.com//notify-sync/message'
                     }
                 }
             }
@@ -144,7 +144,7 @@ pipeline {
                                                        "text" : "The service ''' + env.SERVICE_NAME + ''' has been successfully updated to version: ''' + env.VERSION_NAME + '''"
                                                     }''',
                                     customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
-                                    url: 'http://192.168.15.48:8101/notify-sync/message'
+                                    url: 'https://gtw.csctracker.com/notify-sync/message'
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'developHost', passwordVariable: 'password', usernameVariable: 'user')]) {
@@ -169,7 +169,7 @@ pipeline {
                                                        "text" : "The develop ''' + env.SERVICE_NAME + ''' has been successfully updated to version: ''' + env.VERSION_NAME + '''"
                                                     }''',
                                     customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
-                                    url: 'http://192.168.15.48:8101/notify-sync/message'
+                                    url: 'https://gtw.csctracker.com/notify-sync/message'
                         }
                     }
                 }
@@ -192,7 +192,7 @@ pipeline {
                                                        "text" : "Build on service ''' + env.SERVICE_NAME + ''' branch ''' + env.BRANCH_NAME + ''' finished"
                                                     }''',
                                 customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
-                                url: 'http://192.168.15.48:8101/notify-sync/message'
+                                url: 'https://gtw.csctracker.com/notify-sync/message'
                     }
                 }
             }
