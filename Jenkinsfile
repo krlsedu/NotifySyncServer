@@ -160,28 +160,40 @@ pipeline {
                                 sshCommand remote: remote, command: "docker service update --image krlsedu/" + env.IMAGE_NAME + ":" + env.VERSION_NAME + " " + env.SERVICE_NAME
                             }
                         }
+                        withCredentials([string(credentialsId: 'csctracker_token', variable: 'token_csctracker')]) {
+                            httpRequest acceptType: 'APPLICATION_JSON',
+                                    contentType: 'APPLICATION_JSON',
+                                    httpMode: 'POST', quiet: true,
+                                    requestBody: '''{
+                                                       "app" : "Jenkins",
+                                                       "text" : "The develop ''' + env.SERVICE_NAME + ''' has been successfully updated to version: ''' + env.VERSION_NAME + '''"
+                                                    }''',
+                                    customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
+                                    url: 'http://192.168.15.48:8101/notify-sync/message'
+                        }
                     }
                 }
             }
         }
-    }
-    stage('Notificar fim de build') {
-        agent any
-        when {
-            expression { env.RELEASE_COMMIT != '0' }
-        }
-        steps {
-            script {
-                withCredentials([string(credentialsId: 'csctracker_token', variable: 'token_csctracker')]) {
-                    httpRequest acceptType: 'APPLICATION_JSON',
-                            contentType: 'APPLICATION_JSON',
-                            httpMode: 'POST', quiet: true,
-                            requestBody: '''{
+
+        stage('Notificar fim de build') {
+            agent any
+            when {
+                expression { env.RELEASE_COMMIT != '0' }
+            }
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'csctracker_token', variable: 'token_csctracker')]) {
+                        httpRequest acceptType: 'APPLICATION_JSON',
+                                contentType: 'APPLICATION_JSON',
+                                httpMode: 'POST', quiet: true,
+                                requestBody: '''{
                                                        "app" : "Jenkins",
                                                        "text" : "Build on service ''' + env.SERVICE_NAME + ''' branch ''' + env.BRANCH_NAME + ''' finished"
                                                     }''',
-                            customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
-                            url: 'http://192.168.15.48:8101/notify-sync/message'
+                                customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
+                                url: 'http://192.168.15.48:8101/notify-sync/message'
+                    }
                 }
             }
         }
