@@ -116,7 +116,7 @@ pipeline {
                         withCredentials([string(credentialsId: 'csctracker_token', variable: 'token_csctracker')]) {
                             httpRequest acceptType: 'APPLICATION_JSON',
                                     contentType: 'APPLICATION_JSON',
-                                    autorization: 'Bearer ' + env.token_csctracker,
+                                    authorization: 'Bearer ' + env.token_csctracker,
                                     httpMode: 'POST', quiet: true,
                                     requestBody: '''{
                                                        "app" : "Jenkins",
@@ -126,7 +126,7 @@ pipeline {
                             sh 'docker service update --image krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME + ' ' + env.SERVICE_NAME
                             httpRequest acceptType: 'APPLICATION_JSON',
                                     contentType: 'APPLICATION_JSON',
-                                    autorization: 'Bearer ' + env.token_csctracker,
+                                    authorization: 'Bearer ' + env.token_csctracker,
                                     httpMode: 'POST', quiet: true,
                                     requestBody: '''{
                                                        "app" : "Jenkins",
