@@ -198,6 +198,16 @@ public class NotificationService {
                 messageDTO.setApp(notificationSyncDTO.getAppName());
                 messageDTO.setTime(simpleDateFormat.format(new Date(notificationSyncDTO.getSystemTime())));
                 return conversor.toD(messageDTO);
+            case "Jenkins":
+                if (messageDTO.getOperation() == null) {
+                    messageDTO.setOperation("unknown");
+                }
+                messageDTO.setForce(true);
+                if (messageDTO.getFrom() == null) {
+                    messageDTO.setFrom(messageDTO.getApp());
+                }
+                messageDTO.setTime(simpleDateFormat.format(new Date()));
+                return conversor.toD(messageDTO);
             case "CscTrackerInvest":
                 if (messageDTO.getOperation() == null) {
                     messageDTO.setOperation("unknown");
