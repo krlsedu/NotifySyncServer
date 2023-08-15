@@ -116,22 +116,22 @@ pipeline {
                         withCredentials([string(credentialsId: 'csctracker_token', variable: 'token_csctracker')]) {
                             httpRequest acceptType: 'APPLICATION_JSON',
                                     contentType: 'APPLICATION_JSON',
-                                    authorization: 'Bearer ' + env.token_csctracker,
                                     httpMode: 'POST', quiet: true,
                                     requestBody: '''{
                                                        "app" : "Jenkins",
                                                        "text" : "Iniciada a atualização do serviço ''' + env.SERVICE_NAME + ''' para a versão: "''' + env.VERSION_NAME + '''
                                                     }''',
+                                    customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
                                     url: 'http://192.168.15.48:8101/notify-sync/message'
                             sh 'docker service update --image krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME + ' ' + env.SERVICE_NAME
                             httpRequest acceptType: 'APPLICATION_JSON',
                                     contentType: 'APPLICATION_JSON',
-                                    authorization: 'Bearer ' + env.token_csctracker,
                                     httpMode: 'POST', quiet: true,
                                     requestBody: '''{
                                                        "app" : "Jenkins",
                                                        "text" : "O serviço ''' + env.SERVICE_NAME + ''' fo atualizado com sucesso para a versão: "''' + env.VERSION_NAME + '''
                                                     }''',
+                                    customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
                                     url: 'http://192.168.15.48:8101/notify-sync/message'
                         }
                     } else {
