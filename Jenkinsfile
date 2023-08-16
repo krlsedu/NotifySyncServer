@@ -34,7 +34,7 @@ pipeline {
                                                        "text" : "New build on service ''' + env.SERVICE_NAME + ''' branch ''' + env.BRANCH_NAME + ''' started"
                                                     }''',
                                 customHeaders: [[name: 'authorization', value: 'Bearer ' + env.token_csctracker]],
-                                url: 'https://gtw.csctracker.com//notify-sync/message'
+                                url: 'https://gtw.csctracker.com/notify-sync/message'
                     }
                 }
             }
@@ -48,6 +48,7 @@ pipeline {
                 expression { env.RELEASE_COMMIT != '0' }
             }
             steps {
+                sh 'mvn versions:set versions:commit -DnewVersion=TEMP'
                 sh 'mvn clean install'
             }
         }
@@ -60,6 +61,7 @@ pipeline {
                 expression { env.RELEASE_COMMIT != '0' }
             }
             steps {
+                sh 'mvn versions:set versions:commit -DnewVersion=TEMP'
                 sh 'mvn test'
             }
         }
@@ -81,22 +83,23 @@ pipeline {
                         sh 'mvn clean install package -DskipTests'
                     } else {
                         echo 'Dev'
-                        VERSION = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}.${BUILDS_TODAY}.${BUILD_NUMBER}')
+                        VERSION = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}.${BUILDS_TODAY,XX}.${BUILD_NUMBER,XXXXX}')
                         VERSION = VERSION + '-SNAPSHOT'
                     }
 
                     withCredentials([usernamePassword(credentialsId: 'gitHub', passwordVariable: 'password', usernameVariable: 'user')]) {
                         script {
-
                             echo "Creating a new tag"
                             sh 'git pull https://krlsedu:${password}@github.com/krlsedu/' + env.REPOSITORY_NAME + '.git HEAD:' + env.BRANCH_NAME
                             sh 'mvn versions:set versions:commit -DnewVersion=' + VERSION
                             sh 'mvn clean install package -DskipTests'
-                            sh "git add ."
-                            sh "git config --global user.email 'krlsedu@gmail.com'"
-                            sh "git config --global user.name 'Carlos Eduardo Duarte Schwalm'"
-                            sh "git commit -m 'Triggered Build: " + VERSION + "'"
-                            sh 'git push https://krlsedu:${password}@github.com/krlsedu/' + env.REPOSITORY_NAME + '.git HEAD:' + env.BRANCH_NAME
+                            if (env.BRANCH_NAME == 'master') {
+                                sh "git add ."
+                                sh "git config --global user.email 'krlsedu@gmail.com'"
+                                sh "git config --global user.name 'Carlos Eduardo Duarte Schwalm'"
+                                sh "git commit -m 'Triggered Build: " + VERSION + "'"
+                                sh 'git push https://krlsedu:${password}@github.com/krlsedu/' + env.REPOSITORY_NAME + '.git HEAD:' + env.BRANCH_NAME
+                            }
                         }
                     }
                     env.VERSION_NAME = VERSION
@@ -109,7 +112,13 @@ pipeline {
                 expression { env.RELEASE_COMMIT != '0' }
             }
             steps {
-                sh 'docker build -t krlsedu/' + env.IMAGE_NAME + ':latest -t krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME + ' .'
+                script {
+                    if (env.BRANCH_NAME == 'master') {
+                        sh 'docker build -t krlsedu/' + env.IMAGE_NAME + ':latest -t krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME + ' .'
+                    } else {
+                        sh 'docker build -t krlsedu/' + env.IMAGE_NAME + ':SNAPSHOT -t krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME + ' .'
+                    }
+                }
             }
         }
         stage('Docker Push') {
@@ -118,10 +127,16 @@ pipeline {
                 expression { env.RELEASE_COMMIT != '0' }
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                    sh 'docker push krlsedu/' + env.IMAGE_NAME
-                    sh 'docker push krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                        sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                        if (env.BRANCH_NAME == 'master') {
+                            sh 'docker push krlsedu/' + env.IMAGE_NAME
+                        } else {
+                            sh 'docker push krlsedu/' + env.IMAGE_NAME + ':SNAPSHOT'
+                        }
+                        sh 'docker push krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME
+                    }
                 }
             }
         }
