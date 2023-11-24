@@ -236,24 +236,28 @@ public class NotificationService {
                     case "ToastGeneric":
                         var sb = new StringBuilder();
                         var count = new AtomicInteger();
-                        binding.getJSONArray("text").forEach(o -> {
-                            if (count.get() == 0) {
-                                messageDTO.setFrom(o.toString().trim());
-                            } else {
-                                try {
-                                    var objO = new JSONObject(o.toString());
-                                    var st = objO.get("placement").toString();
-                                    if (st.equals("attribution")) {
-                                        messageDTO.setApp(objO.get("").toString().trim());
-                                    } else {
-                                        sb.append(objO.get("").toString().trim());
+                        try {
+                            binding.getJSONArray("text").forEach(o -> {
+                                if (count.get() == 0) {
+                                    messageDTO.setFrom(o.toString().trim());
+                                } else {
+                                    try {
+                                        var objO = new JSONObject(o.toString());
+                                        var st = objO.get("placement").toString();
+                                        if (st.equals("attribution")) {
+                                            messageDTO.setApp(objO.get("").toString().trim());
+                                        } else {
+                                            sb.append(objO.get("").toString().trim());
+                                        }
+                                    } catch (Exception e) {
+                                        sb.append(o.toString().trim()).append("\n");
                                     }
-                                } catch (Exception e) {
-                                    sb.append(o.toString().trim()).append("\n");
                                 }
-                            }
-                            count.getAndIncrement();
-                        });
+                                count.getAndIncrement();
+                            });
+                        } catch (Exception e) {
+                            sb.append(binding.getJSONArray("text").toString());
+                        }
                         messageDTO.setText(sb.toString());
                         break;
                     case "ToastImageAndText04":
