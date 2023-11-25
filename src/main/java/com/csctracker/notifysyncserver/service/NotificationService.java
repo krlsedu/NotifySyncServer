@@ -256,7 +256,7 @@ public class NotificationService {
                                 count.getAndIncrement();
                             });
                         } catch (Exception e) {
-                            sb.append(binding.getJSONArray("text").toString());
+                            sb.append(binding.toString());
                         }
                         messageDTO.setText(sb.toString());
                         break;
