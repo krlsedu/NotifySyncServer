@@ -1,7 +1,7 @@
 #!groovy
 env.RELEASE_COMMIT = "1";
 env.VERSION_NAME = "";
-env.SERVICE_NAME = "csctracker_service_notify"
+env.SERVICE_NAME = "csctracker_services_notify"
 env.IMAGE_NAME = "csctracker-notify-sync"
 env.REPOSITORY_NAME = "NotifySyncServer"
 
