@@ -289,6 +289,16 @@ public class NotificationService {
                 if (messageDTO.getFrom() == null) {
                     messageDTO.setFrom("Unknown");
                 }
+                if (messageDTO.getOperation() == null) {
+                    messageDTO.setOperation("");
+                }
+                switch (messageDTO.getOperation()) {
+                    case "urgent":
+                        messageDTO.setForce(true);
+                        break;
+                    default:
+                        messageDTO.setForce(false);
+                }
                 return conversor.toD(messageDTO);
         }
     }
