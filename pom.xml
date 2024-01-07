@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>CscTrackerNotifySync</artifactId>
-    <version>23.47.003</version>
+    <version>23.47.004</version>
     <name>CscTrackerNotifySync</name>
     <description>CscTrackerNotifySync</description>
     <properties>
