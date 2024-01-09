@@ -141,7 +141,6 @@ pipeline {
             }
         }
 
-
         stage('Service update') {
             agent any
             when {
