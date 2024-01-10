@@ -19,7 +19,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.csctracker.service"})
 @Import({
         ConfigsService.class,
-        EnvReader.class,
 })
 public class SpringBootApp extends SpringBootServletInitializer {
     public static void main(String[] args) {
