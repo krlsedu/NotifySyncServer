@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.csctracker</groupId>
             <artifactId>SecurityCore</artifactId>
-            <version>24.02.002</version>
+            <version>24.02.004</version>
         </dependency>
 
         <dependency>

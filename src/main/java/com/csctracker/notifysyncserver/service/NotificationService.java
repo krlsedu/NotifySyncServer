@@ -18,6 +18,7 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,6 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.csctracker.configs.CustomHttpTraceFilter.CORRELATION_ID_LOG_VAR_NAME;
 
 @Service
 @Slf4j
@@ -79,6 +82,7 @@ public class NotificationService {
         } catch (JsonProcessingException e) {
             log.error("Erro ao converter mensagem para JSON", e);
         }
+        entity.setRequestId(MDC.get(CORRELATION_ID_LOG_VAR_NAME));
         notificationSyncRepository.save(entity);
     }
 
