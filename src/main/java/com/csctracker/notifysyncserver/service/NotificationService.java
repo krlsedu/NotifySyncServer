@@ -9,6 +9,7 @@ import com.csctracker.notifysyncserver.repository.NotificationSyncRepository;
 import com.csctracker.securitycore.service.UserInfoService;
 import com.csctracker.service.ConfigsService;
 import com.csctracker.service.RequestInfo;
+import com.csctracker.utils.EnvReader;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -82,8 +83,7 @@ public class NotificationService {
         } catch (JsonProcessingException e) {
             log.error("Erro ao converter mensagem para JSON", e);
         }
-        entity.setRequestId(MDC.get(CORRELATION_ID_LOG_VAR_NAME));
-        notificationSyncRepository.save(entity);
+        save_w_repository(entity);
     }
 
     @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
@@ -92,6 +92,28 @@ public class NotificationService {
         log.info("sendToCLient {} - {}", date, lastSync);
         notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
         lastSync = new Date();
+    }
+
+    public void save_w_repository(Message message) {
+        message.setRequestId(MDC.get(CORRELATION_ID_LOG_VAR_NAME));
+        var post = Unirest.post(EnvReader.readEnv("URL_REPOSITORY") + "messages");
+        var headers = RequestInfo.getHeaders();
+        if (!headers.containsKey("authorization")) {
+            post.header("authorization", "Bearer " + EnvReader.readEnv("API_TOKEN"));
+        }
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            switch (header.getKey().toLowerCase()) {
+                case "content-length":
+                    break;
+                default:
+                    post.header(header.getKey(), header.getValue());
+                    break;
+            }
+        }
+        var response = post
+                .body(message)
+                .asString();
+        response.ifFailure(e -> log.error("Erro ao salvar a mensagem", e));
     }
 
     public void sendToCLient(Message message) {
@@ -124,7 +146,7 @@ public class NotificationService {
         List<Message> messages = notificationSyncRepository.findByUserAndDateSentIsNull(userInfoService.getUser(principal));
         for (Message message : messages) {
             message.setDateSent(new Date());
-            notificationSyncRepository.save(message);
+            save_w_repository(message);
         }
         List<MessageDTO> messageDTOS = conversorMessageDTO.toD(messages);
 
@@ -180,7 +202,7 @@ public class NotificationService {
             message = new Message();
         }
         message.setDateSent(new Date());
-        notificationSyncRepository.save(message);
+        save_w_repository(message);
         var messageDTO = conversorMessageDTO.toD(message);
         return convertMessage(messageDTO);
     }

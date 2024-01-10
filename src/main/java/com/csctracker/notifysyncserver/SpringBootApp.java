@@ -1,6 +1,7 @@
 package com.csctracker.notifysyncserver;
 
 import com.csctracker.service.ConfigsService;
+import com.csctracker.utils.EnvReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -17,7 +18,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.csctracker",
         "com.csctracker.service"})
 @Import({
-        ConfigsService.class
+        ConfigsService.class,
+        EnvReader.class,
 })
 public class SpringBootApp extends SpringBootServletInitializer {
     public static void main(String[] args) {
