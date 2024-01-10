@@ -113,7 +113,11 @@ public class NotificationService {
         var response = post
                 .body(message)
                 .asString();
-        response.ifFailure(e -> log.error("Erro ao salvar a mensagem", e));
+
+        response.ifFailure(e -> {
+            log.error("Erro ao salvar a mensagem" + e.getBody());
+            log.error(e.toString());
+        });
     }
 
     public void sendToCLient(Message message) {
