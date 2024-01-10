@@ -2,6 +2,7 @@ package com.csctracker.notifysyncserver.service;
 
 import com.csctracker.dto.Conversor;
 import com.csctracker.notifysyncserver.dto.MessageDTO;
+import com.csctracker.notifysyncserver.dto.MessageRepositoryDTO;
 import com.csctracker.notifysyncserver.dto.NotificationSyncDTO;
 import com.csctracker.notifysyncserver.dto.OutputMessageDTO;
 import com.csctracker.notifysyncserver.model.Message;
@@ -110,8 +111,21 @@ public class NotificationService {
                     break;
             }
         }
+        var messageRepositoryDTO = new MessageRepositoryDTO();
+        messageRepositoryDTO.setId(message.getId());
+        messageRepositoryDTO.setUuid(message.getUuid());
+        messageRepositoryDTO.setApp(message.getApp());
+        messageRepositoryDTO.setNotify_from(message.getFrom());
+        messageRepositoryDTO.setText(message.getText());
+        messageRepositoryDTO.setOperation(message.getOperation());
+        messageRepositoryDTO.setDate_sent(message.getDateSent());
+        messageRepositoryDTO.setDate_synced(message.getDateSynced());
+        messageRepositoryDTO.setData(message.getData());
+        messageRepositoryDTO.setNotfy_time(message.getTime());
+        messageRepositoryDTO.setRequest_id(message.getRequestId());
+        messageRepositoryDTO.setUser_id(message.getUser().getId());
         var response = post
-                .body(message)
+                .body(messageRepositoryDTO)
                 .asString();
 
         response.ifFailure(e -> {
