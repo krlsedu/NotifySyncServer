@@ -7,7 +7,7 @@
         <relativePath /> 
     </parent>
     <artifactId>CscTrackerNotifySync</artifactId>
-    <version>24.02.009</version>
+    <version>24.02.010</version>
     <name>CscTrackerNotifySync</name>
     <description>CscTrackerNotifySync</description>
     <properties>
