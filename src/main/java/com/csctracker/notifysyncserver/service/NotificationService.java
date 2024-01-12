@@ -1,5 +1,6 @@
 package com.csctracker.notifysyncserver.service;
 
+import com.csctracker.configs.ApplicationInfo;
 import com.csctracker.dto.Conversor;
 import com.csctracker.notifysyncserver.dto.MessageDTO;
 import com.csctracker.notifysyncserver.dto.MessageRepositoryDTO;
@@ -47,14 +48,16 @@ public class NotificationService {
     private final NotificationSyncRepository notificationSyncRepository;
     private final ConfigsService configsService;
     private final ApplicationEventPublisher publisher;
+    private final ApplicationInfo applicationInfo;
 
     private Date lastSync = new Date();
 
-    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, ConfigsService configsService, ApplicationEventPublisher publisher) {
+    public NotificationService(UserInfoService userInfoService, NotificationSyncRepository notificationSyncRepository, ConfigsService configsService, ApplicationEventPublisher publisher, ApplicationInfo applicationInfo) {
         this.userInfoService = userInfoService;
         this.notificationSyncRepository = notificationSyncRepository;
         this.configsService = configsService;
         this.publisher = publisher;
+        this.applicationInfo = applicationInfo;
         objectMapper = new ObjectMapper()
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -91,6 +94,7 @@ public class NotificationService {
     public void sendToCLient() {
         Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
         MDC.put(CORRELATION_ID_LOG_VAR_NAME, "Scheduled_notify-sync-" + UUID.randomUUID());
+        MDC.put("appName", applicationInfo.getAppName());
         log.info("sendToCLient {} - {}", date, lastSync);
         notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
         lastSync = new Date();
