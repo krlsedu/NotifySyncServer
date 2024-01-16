@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>CscTrackerNotifySync</artifactId>
-    <version>24.03.005</version>
+    <version>24.03.006</version>
     <name>CscTrackerNotifySync</name>
     <description>CscTrackerNotifySync</description>
     <properties>
