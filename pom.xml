@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.csctracker</groupId>
         <artifactId>starter</artifactId>
-        <version>24.03.003</version>
+        <version>24.03.004</version>
         <relativePath /> 
     </parent>
 
