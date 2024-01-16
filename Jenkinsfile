@@ -113,6 +113,7 @@ pipeline {
             }
             steps {
                 script {
+                    sh 'mvn versions:set versions:commit -DnewVersion=' + env.VERSION_NAME
                     if (env.BRANCH_NAME == 'master') {
                         sh 'docker build -t krlsedu/' + env.IMAGE_NAME + ':latest -t krlsedu/' + env.IMAGE_NAME + ':' + env.VERSION_NAME + ' .'
                     } else {
