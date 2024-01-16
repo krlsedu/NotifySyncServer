@@ -90,15 +90,6 @@ public class NotificationService {
         save_w_repository(entity);
     }
 
-    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
-    public void sendToCLient() {
-        Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
-        MDC.put(CORRELATION_ID_LOG_VAR_NAME, "Scheduled_notify-sync-" + UUID.randomUUID());
-        log.info("sendToCLient {} - {}", date, lastSync);
-        notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
-        lastSync = new Date();
-    }
-
     public void save_w_repository(Message message) {
         message.setRequestId(MDC.get(CORRELATION_ID_LOG_VAR_NAME));
         var post = Unirest.post(EnvReader.readEnv("URL_REPOSITORY") + "messages");
@@ -140,7 +131,7 @@ public class NotificationService {
 
     public void sendToCLient(Message message) {
         log.info("sendToClient {}", message.getUuid());
-        var post = Unirest.post("http://rabbit:8080/notification");
+        var post = Unirest.post("http://bff:8080/rabbit/notification");
         var headers = RequestInfo.getHeaders();
         for (Map.Entry<String, String> header : headers.entrySet()) {
             switch (header.getKey().toLowerCase()) {
