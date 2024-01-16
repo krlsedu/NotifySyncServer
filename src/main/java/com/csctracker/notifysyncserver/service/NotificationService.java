@@ -94,7 +94,6 @@ public class NotificationService {
     public void sendToCLient() {
         Date date = new Date(new Date().getTime() - (1000 * 60 * 5));
         MDC.put(CORRELATION_ID_LOG_VAR_NAME, "Scheduled_notify-sync-" + UUID.randomUUID());
-        MDC.put("appName", applicationInfo.getAppName());
         log.info("sendToCLient {} - {}", date, lastSync);
         notificationSyncRepository.findByDateSentIsNullAndDateSyncedBetween(date, lastSync).forEach(this::sendToCLient);
         lastSync = new Date();
